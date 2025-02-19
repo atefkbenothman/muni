@@ -1,13 +1,10 @@
 "use client";
 
+import { Tables } from "@/types/database.types";
+
 import { useRef, useEffect, useState, useCallback } from "react";
 import { MapControls } from "@/components/map-controls";
-import type {
-  VehicleActivity,
-  Operator,
-  TransitLine,
-  Stops,
-} from "@/types/transit-types";
+import type { VehicleActivity } from "@/types/transit-types";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { useRealtimeVehicles } from "@/hooks/use-vehicles";
@@ -119,11 +116,12 @@ const createStopMarkerElement = () => {
   return el;
 };
 
-const createStopMarker = (stop: Stops) => {
+const createStopMarker = (stop: Tables<"stops">) => {
+  if (!stop["Location/Latitude"] || !stop["Location/Longitude"]) return;
   return new mapboxgl.Marker(createStopMarkerElement())
     .setLngLat([
-      Number.parseFloat(stop.Location.Longitude),
-      Number.parseFloat(stop.Location.Latitude),
+      Number.parseFloat(stop["Location/Longitude"].toString()),
+      Number.parseFloat(stop["Location/Latitude"].toString()),
     ])
     .setPopup(
       new mapboxgl.Popup({ maxWidth: "300px" }).setHTML(
@@ -132,7 +130,7 @@ const createStopMarker = (stop: Stops) => {
     );
 };
 
-const createStopPopupContent = (stop: Stops) => {
+const createStopPopupContent = (stop: Tables<"stops">) => {
   return `
     <div class="p-3" style="color: black; max-width: 250px;">
       <h3 class="font-bold mb-2">Stop Information</h3>
@@ -141,8 +139,8 @@ const createStopPopupContent = (stop: Stops) => {
         <p><span class="font-semibold">Stop ID:</span> ${stop.id}</p>
         <p><span class="font-semibold">Type:</span> ${stop.StopType}</p>
         ${
-          stop.Extensions.PlatformCode
-            ? `<p><span class="font-semibold">Platform:</span> ${stop.Extensions.PlatformCode}</p>`
+          stop["Extensions/PlatformCode"]
+            ? `<p><span class="font-semibold">Platform:</span> ${stop["Extensions/PlatformCode"]}</p>`
             : ""
         }
         ${
@@ -158,7 +156,7 @@ const createStopPopupContent = (stop: Stops) => {
 const filterVehiclesByLine = (
   vehicles: VehicleActivity[],
   selectedLine: string,
-  transitLines: TransitLine[]
+  transitLines: Tables<"lines">[]
 ): VehicleActivity[] => {
   if (!selectedLine || selectedLine === "All") return vehicles;
   // Find the matching transit line
@@ -172,14 +170,17 @@ const filterVehiclesByLine = (
   });
 };
 
-export function MuniMap() {
+type MuniMapProps = {
+  lines: Tables<"lines">[];
+  stops: Tables<"stops">[];
+  operators: Tables<"operators">[];
+};
+
+export function MuniMap({ lines, stops, operators }: MuniMapProps) {
   const {
-    operators,
     selectedOperator,
     setSelectedOperator,
-    transitLines,
     selectedLine,
-    stops,
     setSelectedLine,
   } = useTransitData(DEFAULT_AGENCY);
   const { vehicles, countdown } = useRealtimeVehicles(REFRESH_INTERVAL);
@@ -211,7 +212,7 @@ export function MuniMap() {
     const filteredVehicles = filterVehiclesByLine(
       vehicles,
       selectedLine,
-      transitLines
+      lines
     );
 
     filteredVehicles.forEach((vehicle) => {
@@ -222,7 +223,7 @@ export function MuniMap() {
           marker;
       }
     });
-  }, [vehicles, selectedLine, transitLines]);
+  }, [vehicles, selectedLine, lines]);
 
   useEffect(() => {
     if (!map.current) return;
@@ -232,8 +233,10 @@ export function MuniMap() {
 
     stops.forEach((stop) => {
       const marker = createStopMarker(stop);
-      marker.addTo(map.current!);
-      stopMarkers.current[stop.id] = marker;
+      if (marker) {
+        marker.addTo(map.current!);
+        stopMarkers.current[stop.id] = marker;
+      }
     });
   }, [stops]);
 
@@ -272,8 +275,10 @@ export function MuniMap() {
     if (showStops) {
       stops.forEach((stop) => {
         const marker = createStopMarker(stop);
-        marker.addTo(map.current!);
-        stopMarkers.current[stop.id] = marker;
+        if (marker) {
+          marker.addTo(map.current!);
+          stopMarkers.current[stop.id] = marker;
+        }
       });
     }
   }, [stops, showStops]);
@@ -302,7 +307,7 @@ export function MuniMap() {
             operators={operators}
             selectedOperator={selectedOperator}
             onOperatorChange={handleOperatorChange}
-            transitLines={transitLines}
+            lines={lines}
             selectedLine={selectedLine}
             onLineChange={handleLineChange}
             showStops={showStops}

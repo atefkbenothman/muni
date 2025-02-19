@@ -1,10 +1,10 @@
-import { Operator, TransitLine } from "@/types/transit-types";
+import { Tables } from "@/types/database.types";
 
 type MapControlProps = {
-  operators: Operator[];
+  operators: Tables<"operators">[];
   selectedOperator: string;
   onOperatorChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-  transitLines: TransitLine[];
+  lines: Tables<"lines">[];
   selectedLine: string;
   onLineChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   showStops: boolean;
@@ -16,7 +16,7 @@ export const MapControls = ({
   operators,
   selectedOperator,
   onOperatorChange,
-  transitLines,
+  lines,
   selectedLine,
   onLineChange,
   showStops,
@@ -48,7 +48,7 @@ export const MapControls = ({
           className="w-full border p-1 rounded-sm"
         >
           <option>All</option>
-          {transitLines.map((line) => (
+          {lines.map((line) => (
             <option key={line.Id} value={line.Id}>
               {line.Name} ({line.PublicCode})
             </option>
