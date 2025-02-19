@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useCallback } from "react";
 import { MapControls } from "@/components/map-controls";
 import type {
   VehicleActivity,
@@ -19,7 +19,7 @@ const MAP_CONFIG = {
   center: [-122.4194, 37.7749] as [number, number],
   zoom: 12,
 };
-const REFRESH_INTERVAL = 60;
+const REFRESH_INTERVAL = 600;
 const DEFAULT_AGENCY = "SF";
 
 mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
@@ -33,20 +33,33 @@ const createMarkerElement = () => {
   return el;
 };
 
-const createVehicleMarker = (vehicle: VehicleActivity) => {
+const createVehicleMarker = (
+  vehicle: VehicleActivity,
+  onMarkerClick: (lineRef: string) => void
+) => {
   const { MonitoredVehicleJourney: journey } = vehicle;
   if (!journey.LineRef) return null;
 
-  return new mapboxgl.Marker(createMarkerElement())
+  const popup = new mapboxgl.Popup({ maxWidth: "350px" }).setHTML(
+    createPopupMarker(vehicle)
+  );
+
+  const marker = new mapboxgl.Marker(createMarkerElement())
     .setLngLat([
       Number.parseFloat(journey.VehicleLocation.Longitude),
       Number.parseFloat(journey.VehicleLocation.Latitude),
     ])
-    .setPopup(
-      new mapboxgl.Popup({ maxWidth: "350px" }).setHTML(
-        createPopupMarker(vehicle)
-      )
-    );
+    .setPopup(popup);
+
+  marker.getElement().addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (journey.LineRef) {
+      onMarkerClick(journey.LineRef);
+      marker.togglePopup();
+    }
+  });
+
+  return marker;
 };
 
 const createPopupMarker = (vehicle: VehicleActivity) => {
@@ -148,10 +161,14 @@ const filterVehiclesByLine = (
   transitLines: TransitLine[]
 ): VehicleActivity[] => {
   if (!selectedLine || selectedLine === "All") return vehicles;
+  // Find the matching transit line
+  const matchingLine = transitLines.find(
+    (line) => line.Id === selectedLine || line.SiriLineRef === selectedLine
+  );
   return vehicles.filter((vehicle) => {
     const lineRef = vehicle.MonitoredVehicleJourney.LineRef;
-    const matchingLine = transitLines.find((line) => line.Id === selectedLine);
-    return lineRef === matchingLine?.SiriLineRef;
+    // Check against both the SiriLineRef and the direct LineRef
+    return lineRef === matchingLine?.SiriLineRef || lineRef === selectedLine;
   });
 };
 
@@ -198,7 +215,7 @@ export function MuniMap() {
     );
 
     filteredVehicles.forEach((vehicle) => {
-      const marker = createVehicleMarker(vehicle);
+      const marker = createVehicleMarker(vehicle, handleMarkerClick);
       if (marker) {
         marker.addTo(map.current!);
         vehicleMarkers.current[vehicle.MonitoredVehicleJourney.VehicleRef] =
@@ -236,6 +253,14 @@ export function MuniMap() {
   const handleLineChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedLine(e.target.value);
   };
+
+  const handleMarkerClick = useCallback((lineRef: string) => {
+    setSelectedLine(lineRef);
+  }, []);
+
+  const handleResetFilter = useCallback(() => {
+    setSelectedLine("All");
+  }, []);
 
   // Update the stops effect to respect the showStops state
   useEffect(() => {
@@ -282,6 +307,7 @@ export function MuniMap() {
             onLineChange={handleLineChange}
             showStops={showStops}
             onToggleStops={toggleStopMarkers}
+            onResetFilter={handleResetFilter}
           />
         </div>
       </div>

@@ -9,6 +9,7 @@ type MapControlProps = {
   onLineChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   showStops: boolean;
   onToggleStops: () => void;
+  onResetFilter: () => void;
 };
 
 export const MapControls = ({
@@ -20,6 +21,7 @@ export const MapControls = ({
   onLineChange,
   showStops,
   onToggleStops,
+  onResetFilter,
 }: MapControlProps) => {
   return (
     <div className="flex flex-col space-y-4">
@@ -62,6 +64,15 @@ export const MapControls = ({
           }`}
         >
           {showStops ? "On" : "Off"}
+        </button>
+      </div>
+      <div>
+        <button
+          onClick={onResetFilter}
+          className="rounded-sm bg-gray-300 px-3 py-1 text-black"
+          title="Reset line filter"
+        >
+          Reset Filter
         </button>
       </div>
     </div>
