@@ -16,7 +16,6 @@ export const useTransitData = (initialOperator: string) => {
       try {
         setIsLoading(true);
         setError(null);
-
         const [operatorsData, transitLinesData] = await Promise.all([
           getOperators(),
           getLines()

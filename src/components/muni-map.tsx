@@ -101,7 +101,7 @@ const filterVehiclesByLine = (
   selectedLine: string,
   transitLines: TransitLine[]
 ): VehicleActivity[] => {
-  if (!selectedLine) return vehicles;
+  if (!selectedLine || selectedLine === "All") return vehicles;
   return vehicles.filter((vehicle) => {
     const lineRef = vehicle.MonitoredVehicleJourney.LineRef;
     const matchingLine = transitLines.find((line) => line.Id === selectedLine);
@@ -164,20 +164,26 @@ export function MuniMap() {
   };
 
   return (
-    <div className="w-full max-w-4xl">
-      <MapControls
-        operators={operators}
-        selectedOperator={selectedOperator}
-        onOperatorChange={handleOperatorChange}
-        transitLines={transitLines}
-        selectedLine={selectedLine}
-        onLineChange={handleLineChange}
-        countdown={countdown}
-      />
-      <div
-        ref={mapContainer}
-        className="w-full h-[600px] rounded-sm overflow-hidden"
-      />
-    </div>
+    <>
+      <div className="grid grid-cols-1 lg:grid-cols-8 w-full gap-4">
+        <div
+          ref={mapContainer}
+          className="col-span-full lg:col-span-6 order-2 lg:order-1 h-[600px] rounded-sm overflow-hidden"
+        />
+        <div className="col-span-full lg:col-span-2 order-1 lg:order-2 lg:px-4">
+          <MapControls
+            operators={operators}
+            selectedOperator={selectedOperator}
+            onOperatorChange={handleOperatorChange}
+            transitLines={transitLines}
+            selectedLine={selectedLine}
+            onLineChange={handleLineChange}
+          />
+        </div>
+      </div>
+      <div className="text-sm text-gray-400 my-4">
+        Refreshing in {countdown} seconds
+      </div>
+    </>
   );
 }
