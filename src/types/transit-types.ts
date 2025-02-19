@@ -54,29 +54,31 @@ export type VehicleActivity = {
 };
 
 export type Stops = {
+  id: string;
+  Extensions: {
+    LocationType: null | string;
+    PlatformCode: null | string;
+    ParentStation: null | string;
+    ValidBetween: {
+      FromDate: string;
+      ToDate: string;
+    };
+  };
+  Name: string;
+  Location: {
+    Longitude: string;
+    Latitude: string;
+  };
+  Url: string;
+  StopType: string; 
+}
+
+export type StopsData = {
   Contents: {
     ResponseTimestamp: string;
     dataObjects: {
       id: string;
-      ScheduledStopPoint: Array<{
-        id: string;
-        Extensions: {
-          LocationType: null | string;
-          PlatformCode: null | string;
-          ParentStation: null | string;
-          ValidBetween: {
-            FromDate: string;
-            ToDate: string;
-          };
-        };
-        Name: string;
-        Location: {
-          Longitude: string;
-          Latitude: string;
-        };
-        Url: string;
-        StopType: string;
-      }>;
+      ScheduledStopPoint: Stops[]
     };
   };
 }

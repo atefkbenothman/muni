@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
-import { getOperators, getLines } from "@/actions/muni-actions";
-import type { Operator, TransitLine } from "@/types/transit-types";
+import { getOperators, getLines, getStops } from "@/actions/muni-actions";
+import { type Stops, type Operator, type TransitLine } from "@/types/transit-types";
 
 export const useTransitData = (initialOperator: string) => {
   const [operators, setOperators] = useState<Operator[]>([]);
   const [selectedOperator, setSelectedOperator] = useState<string>(initialOperator);
   const [transitLines, setTransitLines] = useState<TransitLine[]>([]);
   const [selectedLine, setSelectedLine] = useState<string>("");
+  const [stops, setStops] = useState<Stops[]>([])
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -16,13 +17,18 @@ export const useTransitData = (initialOperator: string) => {
       try {
         setIsLoading(true);
         setError(null);
-        const [operatorsData, transitLinesData] = await Promise.all([
-          getOperators(),
-          getLines()
-        ]);
+        // const [operatorsData, transitLinesData, stopsData] = await Promise.all([
+        //   getOperators(),
+        //   getLines(),
+        //   getStops(),
+        // ]);
 
-        setOperators(operatorsData);
-        setTransitLines(transitLinesData);
+        // const stopsData = await getStops()
+        // setStops(stopsData.Contents.dataObjects.ScheduledStopPoint)
+
+        // setOperators(operatorsData);
+        // setTransitLines(transitLinesData);
+        // setStops(stopsData)
       } catch (err) {
         setError("Failed to fetch transit data");
         console.error("Error fetching transit data:", err);
@@ -41,6 +47,7 @@ export const useTransitData = (initialOperator: string) => {
     transitLines,
     selectedLine,
     setSelectedLine,
+    stops,
     isLoading,
     error
   };

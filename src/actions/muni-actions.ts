@@ -1,6 +1,6 @@
 "use server"
 
-import { Operator } from "@/types/transit-types";
+import { Operator, StopsData } from "@/types/transit-types";
 import { TransitLine } from "@/types/transit-types";
 
 const apiKey = process.env.TRANSIT_API_KEY;
@@ -41,4 +41,18 @@ export async function getLines() {
   })
   const data = await response.json()
   return data as TransitLine[]
+}
+
+export async function getStops() {
+  const response = await fetch(
+    `http://api.511.org/transit/stops?api_key=${apiKey}&operator_id=${operatorId}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  )
+  const data = await response.json()
+  return data as StopsData
 }

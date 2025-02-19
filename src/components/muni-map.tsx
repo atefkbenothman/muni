@@ -6,6 +6,7 @@ import type {
   VehicleActivity,
   Operator,
   TransitLine,
+  Stops,
 } from "@/types/transit-types";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -96,6 +97,51 @@ const createPopupMarker = (vehicle: VehicleActivity) => {
   `;
 };
 
+const createStopMarkerElement = () => {
+  const el = document.createElement("div");
+  el.className = "stop-marker";
+  el.textContent = "🚏";
+  el.style.fontSize = "20px";
+  el.style.lineHeight = "20px";
+  return el;
+};
+
+const createStopMarker = (stop: Stops) => {
+  return new mapboxgl.Marker(createStopMarkerElement())
+    .setLngLat([
+      Number.parseFloat(stop.Location.Longitude),
+      Number.parseFloat(stop.Location.Latitude),
+    ])
+    .setPopup(
+      new mapboxgl.Popup({ maxWidth: "300px" }).setHTML(
+        createStopPopupContent(stop)
+      )
+    );
+};
+
+const createStopPopupContent = (stop: Stops) => {
+  return `
+    <div class="p-3" style="color: black; max-width: 250px;">
+      <h3 class="font-bold mb-2">Stop Information</h3>
+      <div class="space-y-1">
+        <p><span class="font-semibold">Name:</span> ${stop.Name}</p>
+        <p><span class="font-semibold">Stop ID:</span> ${stop.id}</p>
+        <p><span class="font-semibold">Type:</span> ${stop.StopType}</p>
+        ${
+          stop.Extensions.PlatformCode
+            ? `<p><span class="font-semibold">Platform:</span> ${stop.Extensions.PlatformCode}</p>`
+            : ""
+        }
+        ${
+          stop.Url
+            ? `<p><a href="${stop.Url}" target="_blank" class="text-blue-500 hover:underline">More Info</a></p>`
+            : ""
+        }
+      </div>
+    </div>
+  `;
+};
+
 const filterVehiclesByLine = (
   vehicles: VehicleActivity[],
   selectedLine: string,
@@ -116,13 +162,16 @@ export function MuniMap() {
     setSelectedOperator,
     transitLines,
     selectedLine,
+    stops,
     setSelectedLine,
   } = useTransitData(DEFAULT_AGENCY);
   const { vehicles, countdown } = useRealtimeVehicles(REFRESH_INTERVAL);
 
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
-  const markers = useRef<{ [key: string]: mapboxgl.Marker }>({});
+
+  const vehicleMarkers = useRef<{ [key: string]: mapboxgl.Marker }>({});
+  const stopMarkers = useRef<{ [key: string]: mapboxgl.Marker }>({});
 
   // Initialize Mapbox map
   useEffect(() => {
@@ -137,8 +186,8 @@ export function MuniMap() {
   useEffect(() => {
     if (!map.current) return;
 
-    Object.values(markers.current).forEach((marker) => marker.remove());
-    markers.current = {};
+    Object.values(vehicleMarkers.current).forEach((marker) => marker.remove());
+    vehicleMarkers.current = {};
 
     const filteredVehicles = filterVehiclesByLine(
       vehicles,
@@ -150,10 +199,33 @@ export function MuniMap() {
       const marker = createVehicleMarker(vehicle);
       if (marker) {
         marker.addTo(map.current!);
-        markers.current[vehicle.MonitoredVehicleJourney.VehicleRef] = marker;
+        vehicleMarkers.current[vehicle.MonitoredVehicleJourney.VehicleRef] =
+          marker;
       }
     });
   }, [vehicles, selectedLine, transitLines]);
+
+  useEffect(() => {
+    if (!map.current) return;
+
+    Object.values(stopMarkers.current).forEach((marker) => marker.remove());
+    stopMarkers.current = {};
+
+    stops.forEach((stop) => {
+      const marker = createStopMarker(stop);
+      marker.addTo(map.current!);
+      stopMarkers.current[stop.id] = marker;
+    });
+  }, [stops]);
+
+  useEffect(() => {
+    return () => {
+      Object.values(vehicleMarkers.current).forEach((marker) =>
+        marker.remove()
+      );
+      Object.values(stopMarkers.current).forEach((marker) => marker.remove());
+    };
+  }, []);
 
   const handleOperatorChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedOperator(e.target.value);
@@ -170,7 +242,7 @@ export function MuniMap() {
           ref={mapContainer}
           className="col-span-full lg:col-span-6 order-2 lg:order-1 h-[600px] rounded-sm overflow-hidden"
         />
-        <div className="col-span-full lg:col-span-2 order-1 lg:order-2 lg:px-4">
+        <div className="col-span-full lg:col-span-2 order-1 lg:order-2 lg:px-4 py-2">
           <MapControls
             operators={operators}
             selectedOperator={selectedOperator}
