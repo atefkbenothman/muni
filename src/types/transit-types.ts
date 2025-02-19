@@ -82,3 +82,64 @@ export type StopsData = {
     };
   };
 }
+
+export type StopPlaces = {
+  Siri: {
+    ServiceDelivery: {
+      ResponseTimestamp: string;
+      DataObjectDelivery: {
+        ResponseTimestamp: string;
+        dataObjects: {
+          SiteFrame: {
+            "@version": string;
+            "@id": string;
+            stopPlaces: {
+              StopPlace: Array<{
+                "@version": string;
+                "@id": string;
+                ValidBetween: {
+                  FromDate: string;
+                  ToDate: string;
+                };
+                Name: string;
+                Description: null;
+                Centroid: {
+                  Location: {
+                    Longitude: string;
+                    Latitude: string;
+                  };
+                };
+                AccessibilityAssessment: {
+                  "@version": string;
+                  "@id": string;
+                  MobilityImpairedAccess: string;
+                  limitations: {
+                    AccessibilityLimitation: {
+                      WheelchairAccess: string;
+                    };
+                  };
+                };
+                PostalAddress: {
+                  AddressLine1: string;
+                  Town: string;
+                };
+                Url: string;
+                OperatorRef: {
+                  "@ref": string;
+                };
+                adjacentSites: {
+                  ParkingRef: {
+                    "@ref": string;
+                  };
+                };
+                PublicCode: string;
+                TransportMode: string;
+                StopPlaceType: string;
+              }>;
+            };
+          };
+        };
+      };
+    };
+  };
+};
