@@ -173,6 +173,8 @@ export function MuniMap() {
   const vehicleMarkers = useRef<{ [key: string]: mapboxgl.Marker }>({});
   const stopMarkers = useRef<{ [key: string]: mapboxgl.Marker }>({});
 
+  const [showStops, setShowStops] = useState(false);
+
   // Initialize Mapbox map
   useEffect(() => {
     if (map.current) return;
@@ -235,6 +237,34 @@ export function MuniMap() {
     setSelectedLine(e.target.value);
   };
 
+  // Update the stops effect to respect the showStops state
+  useEffect(() => {
+    if (!map.current) return;
+
+    Object.values(stopMarkers.current).forEach((marker) => marker.remove());
+    stopMarkers.current = {};
+
+    if (showStops) {
+      stops.forEach((stop) => {
+        const marker = createStopMarker(stop);
+        marker.addTo(map.current!);
+        stopMarkers.current[stop.id] = marker;
+      });
+    }
+  }, [stops, showStops]);
+
+  // Add this function inside the component
+  const toggleStopMarkers = () => {
+    setShowStops(!showStops);
+    Object.values(stopMarkers.current).forEach((marker) => {
+      if (showStops) {
+        marker.remove();
+      } else {
+        marker.addTo(map.current!);
+      }
+    });
+  };
+
   return (
     <>
       <div className="grid grid-cols-1 lg:grid-cols-8 w-full gap-4">
@@ -250,6 +280,8 @@ export function MuniMap() {
             transitLines={transitLines}
             selectedLine={selectedLine}
             onLineChange={handleLineChange}
+            showStops={showStops}
+            onToggleStops={toggleStopMarkers}
           />
         </div>
       </div>

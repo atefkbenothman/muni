@@ -22,13 +22,9 @@ export const useTransitData = (initialOperator: string) => {
         //   getLines(),
         //   getStops(),
         // ]);
-
-        // const stopsData = await getStops()
-        // setStops(stopsData.Contents.dataObjects.ScheduledStopPoint)
-
         // setOperators(operatorsData);
         // setTransitLines(transitLinesData);
-        // setStops(stopsData)
+        // setStops(stopsData.Contents.dataObjects.ScheduledStopPoint)
       } catch (err) {
         setError("Failed to fetch transit data");
         console.error("Error fetching transit data:", err);

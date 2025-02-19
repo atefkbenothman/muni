@@ -7,6 +7,8 @@ type MapControlProps = {
   transitLines: TransitLine[];
   selectedLine: string;
   onLineChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  showStops: boolean;
+  onToggleStops: () => void;
 };
 
 export const MapControls = ({
@@ -16,6 +18,8 @@ export const MapControls = ({
   transitLines,
   selectedLine,
   onLineChange,
+  showStops,
+  onToggleStops,
 }: MapControlProps) => {
   return (
     <div className="flex flex-col space-y-4">
@@ -48,6 +52,17 @@ export const MapControls = ({
             </option>
           ))}
         </select>
+      </div>
+      <div className="flex items-center space-x-2">
+        <label className="text-sm">Show Stops</label>
+        <button
+          onClick={onToggleStops}
+          className={`px-3 py-1 rounded-sm ${
+            showStops ? "bg-blue-500 text-white" : "bg-gray-300 text-gray-700"
+          }`}
+        >
+          {showStops ? "On" : "Off"}
+        </button>
       </div>
     </div>
   );
