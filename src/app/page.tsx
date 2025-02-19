@@ -1,6 +1,6 @@
 "use server";
 import { createClient } from "@/utils/server";
-import { MuniMap } from "@/components/muni-map";
+import { Content } from "@/components/content";
 
 export default async function Home() {
   const client = await createClient();
@@ -28,7 +28,7 @@ export default async function Home() {
           San Francisco Muni Map
         </h1>
       </div>
-      <MuniMap lines={lines} stops={stops} operators={operators} />
+      <Content lines={lines} stops={stops} operators={operators} />
     </div>
   );
 }
