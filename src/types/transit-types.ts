@@ -1,7 +1,7 @@
 export type Operator = {
   Id: string;
   Name: string;
-  ShortName: string;
+  ShortName: string | null;
   SiriOperatorRef: null | string;
   TimeZone: string;
   DefaultLanguage: string;
@@ -16,8 +16,8 @@ export type Operator = {
 export type TransitLine = {
   Id: string;
   Name: string;
-  FromDate: Date;
-  ToDate: Date;
+  FromDate: string;
+  ToDate: string;
   TransportMode: string;
   PublicCode: string;
   SiriLineRef: string;

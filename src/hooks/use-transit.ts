@@ -1,50 +1,23 @@
-import { useState, useEffect } from "react";
-import { getOperators, getLines, getStops } from "@/actions/muni-actions";
-import { type Stops, type Operator, type TransitLine } from "@/types/transit-types";
+import { useState } from "react";
+import { STOPS_DATA } from "@/data/stops-data";
+import { LINES_DATA } from "@/data/lines-data";
+import { OPERATORS_DATA } from "@/data/operators-data";
+
+const stopsData = STOPS_DATA.Contents.dataObjects.ScheduledStopPoint
+const linesData = LINES_DATA
+const operatorsData = OPERATORS_DATA
 
 export const useTransitData = (initialOperator: string) => {
-  const [operators, setOperators] = useState<Operator[]>([]);
   const [selectedOperator, setSelectedOperator] = useState<string>(initialOperator);
-  const [transitLines, setTransitLines] = useState<TransitLine[]>([]);
-  const [selectedLine, setSelectedLine] = useState<string>("");
-  const [stops, setStops] = useState<Stops[]>([])
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  // Fetch both operators and transit lines
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoading(true);
-        setError(null);
-        // const [operatorsData, transitLinesData, stopsData] = await Promise.all([
-        //   getOperators(),
-        //   getLines(),
-        //   getStops(),
-        // ]);
-        // setOperators(operatorsData);
-        // setTransitLines(transitLinesData);
-        // setStops(stopsData.Contents.dataObjects.ScheduledStopPoint)
-      } catch (err) {
-        setError("Failed to fetch transit data");
-        console.error("Error fetching transit data:", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [selectedOperator]); // Refetch when operator changes
+  const [selectedLine, setSelectedLine] = useState<string>("All");
 
   return {
-    operators,
+    operators: operatorsData,
     selectedOperator,
     setSelectedOperator,
-    transitLines,
+    transitLines: linesData,
     selectedLine,
     setSelectedLine,
-    stops,
-    isLoading,
-    error
+    stops: stopsData,
   };
 };
