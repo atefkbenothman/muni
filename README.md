@@ -1,31 +1,37 @@
 # SF Muni Map
 
-An interactive web application that displays real-time San Francisco Muni transit information using Next.js, Mapbox GL, and Supabase.
+An interactive web application that displays real-time San Francisco Muni transit information using Next.js 15, Mapbox GL, and Supabase.
 
 ## Features
 
 - Real-time tracking of SF Muni vehicles 🚌
 - Interactive map interface with vehicle and stop markers
 - Detailed information popups for vehicles and stops
-- Filtering capabilities by operator and line
-- Auto-refresh functionality to keep data current
-- Toggle display of transit stops
+- Filtering by operator and line
+- Transport mode toggles (Bus 🚎, Metro 🚃, Cableway 🚋)
+- Auto-refresh functionality (10-minute intervals)
+- Transit stop display toggle
+- Responsive layout for desktop and mobile
 
 ## Tech Stack
 
-- **Frontend Framework**: Next.js 15
-- **Mapping**: Mapbox GL & React Map GL
-- **Database**: Supabase
-- **Styling**: Tailwind CSS
+- **Framework**: Next.js 15 with App Router
 - **Language**: TypeScript
+- **Database**: Supabase
+- **Mapping**: Mapbox GL & React Map GL
+- **Styling**: Tailwind CSS
+- **State Management**: React Hooks
+- **Build Tool**: Turbopack
 
 ## Prerequisites
 
-- Node.js (Latest LTS version recommended)
-- npm or yarn or pnpm
+Before you begin, ensure you have:
+
+- Node.js (Latest LTS version)
+- npm, yarn, or pnpm
 - Mapbox API Key
 - Supabase Project and API Keys
-- Transit API Key
+- 511.org Transit API Key
 
 ## Environment Variables
 
