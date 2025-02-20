@@ -17,9 +17,28 @@ export default async function Home() {
     .from("stops")
     .select("*");
 
+  const { data: patternsData, error: patternsError } = await client
+    .from("patterns")
+    .select("*")
+    .eq("LineRef", "L");
+
   const lines = linesData ?? [];
   const stops = stopsData ?? [];
   const operators = operatorsData ?? [];
+  const patterns = patternsData ?? [];
+
+  // THIS CODE ITERATES THROUGH STOP POINTS AND PRINTS ALL STOP REFS
+  // patterns.forEach((pattern) => {
+  //   const pointsInSequence = pattern.PointsInSequence as string | null;
+  //   if (pointsInSequence) {
+  //     const cleanedPoints = pointsInSequence.replace(/'/g, '"');
+  //     const stopPoints = JSON.parse(cleanedPoints)["StopPointInJourneyPattern"];
+  //     stopPoints.forEach((stop: any) => {
+  //       const stopRef = stop["ScheduledStopPointRef"];
+  //       console.log(stopRef);
+  //     });
+  //   }
+  // });
 
   return (
     <div className="flex h-screen flex-col items-center justify-center p-4">
