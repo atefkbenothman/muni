@@ -10,6 +10,7 @@ import { useTransitData } from "@/hooks/use-transit";
 import { PopupInfo } from "@/components/muni-map";
 import { Tables } from "@/types/database.types";
 import { Countdown } from "@/components/countdown";
+import { getPatternsByLine } from "@/actions/muni-actions";
 
 const REFRESH_INTERVAL = 600;
 const DEFAULT_AGENCY = "SF";
@@ -31,6 +32,24 @@ const filterVehiclesByLine = (
   });
 };
 
+const parseStopRefs = (pointsInSequence: string | null): string[] => {
+  if (!pointsInSequence) return [];
+  const cleanedPoints = pointsInSequence.replace(
+    /(^|[{,\s])'([^']*)'/g,
+    '$1"$2"'
+  );
+  try {
+    const parsed = JSON.parse(cleanedPoints);
+    return parsed.StopPointInJourneyPattern.map(
+      (stop: any) => stop.ScheduledStopPointRef
+    );
+  } catch (err) {
+    console.log(cleanedPoints);
+    console.error("Error parsing stop refs:", err);
+    return [];
+  }
+};
+
 type ContentProps = {
   lines: Tables<"lines">[];
   stops: Tables<"stops">[];
@@ -47,8 +66,10 @@ export function Content({ lines, stops, operators }: ContentProps) {
     setSelectedLine,
   } = useTransitData(DEFAULT_AGENCY);
 
-  const [showStops, setShowStops] = useState(false);
+  const [showStops, setShowStops] = useState(true);
   const [popupInfo, setPopupInfo] = useState<PopupInfo | null>(null);
+
+  const [routeStops, setRouteStops] = useState<Tables<"stops">[]>([]);
 
   const filteredVehicles = useMemo(() => {
     return filterVehiclesByLine(vehicles, selectedLine, lines);
@@ -62,18 +83,36 @@ export function Content({ lines, stops, operators }: ContentProps) {
   );
 
   const handleLineChange = useCallback(
-    (e: React.ChangeEvent<HTMLSelectElement>) => {
+    async (e: React.ChangeEvent<HTMLSelectElement>) => {
       setSelectedLine(e.target.value);
+      const patterns = await getPatternsByLine(e.target.value);
+      const allStopRefs = patterns.flatMap((pattern) =>
+        parseStopRefs(pattern.PointsInSequence as string)
+      );
+      const matchedStops = stops.filter((stop) =>
+        allStopRefs.includes(stop.id.toString())
+      );
+      setRouteStops(matchedStops);
     },
     []
   );
 
-  const handleMarkerClick = useCallback((lineRef: string) => {
+  const handleMarkerClick = useCallback(async (lineRef: string) => {
     setSelectedLine(lineRef);
+    setShowStops(true);
+    const patterns = await getPatternsByLine(lineRef);
+    const allStopRefs = patterns.flatMap((pattern) =>
+      parseStopRefs(pattern.PointsInSequence as string)
+    );
+    const matchedStops = stops.filter((stop) =>
+      allStopRefs.includes(stop.id.toString())
+    );
+    setRouteStops(matchedStops);
   }, []);
 
   const handleResetFilter = useCallback(() => {
     setSelectedLine("All");
+    setRouteStops([]);
   }, []);
 
   const toggleStopMarkers = useCallback(() => {
@@ -87,10 +126,11 @@ export function Content({ lines, stops, operators }: ContentProps) {
           <MuniMap
             filteredVehicles={filteredVehicles}
             showStops={showStops}
-            stops={stops}
+            stops={routeStops}
             popupInfo={popupInfo}
             setPopupInfo={setPopupInfo}
             handleMarkerClick={handleMarkerClick}
+            lines={lines}
           />
         </div>
         <div className="col-span-full lg:col-span-2 order-1 lg:order-2 lg:px-4 py-2">

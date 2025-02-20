@@ -16,6 +16,12 @@ const bounds: [number, number, number, number] = [
   37.871651, // Northeast coordinates
 ];
 
+const icons = {
+  bus: "🚎",
+  metro: "🚃",
+  cableway: "🚋",
+};
+
 export type PopupInfo = {
   type: "vehicle" | "stop";
   data: VehicleActivity | Tables<"stops">;
@@ -30,6 +36,7 @@ type MapProps = {
   popupInfo: PopupInfo | null;
   setPopupInfo: (info: PopupInfo | null) => void;
   handleMarkerClick: (lineRef: string) => void;
+  lines: Tables<"lines">[];
 };
 
 export const MuniMap = memo(
@@ -40,6 +47,7 @@ export const MuniMap = memo(
     popupInfo,
     setPopupInfo,
     handleMarkerClick,
+    lines,
   }: MapProps) => {
     return (
       <Map
@@ -54,35 +62,50 @@ export const MuniMap = memo(
         style={{ width: "100%", height: "100%" }}
         maxBounds={bounds}
       >
-        {filteredVehicles.map((vehicle, idx) => (
-          <Marker
-            key={idx}
-            longitude={Number(
-              vehicle.MonitoredVehicleJourney.VehicleLocation.Longitude
-            )}
-            latitude={Number(
-              vehicle.MonitoredVehicleJourney.VehicleLocation.Latitude
-            )}
-            onClick={(e) => {
-              e.originalEvent.stopPropagation();
-              setPopupInfo({
-                type: "vehicle",
-                data: vehicle,
-                latitude: Number(
-                  vehicle.MonitoredVehicleJourney.VehicleLocation.Latitude
-                ),
-                longitude: Number(
-                  vehicle.MonitoredVehicleJourney.VehicleLocation.Longitude
-                ),
-              });
-              if (vehicle.MonitoredVehicleJourney.LineRef) {
-                handleMarkerClick(vehicle.MonitoredVehicleJourney.LineRef);
-              }
-            }}
-          >
-            <div className="text-xl cursor-pointer">🚌</div>
-          </Marker>
-        ))}
+        {filteredVehicles.map((vehicle, idx) => {
+          const lineRef = vehicle.MonitoredVehicleJourney.LineRef;
+          if (!lineRef) {
+            return;
+          }
+          const transportMode = lines.find(
+            (line) => line.Id === lineRef
+          )?.TransportMode;
+
+          const vehicleEmoji = transportMode
+            ? icons[transportMode as keyof typeof icons]
+            : "🚗";
+
+          return (
+            <Marker
+              key={idx}
+              longitude={Number(
+                vehicle.MonitoredVehicleJourney.VehicleLocation.Longitude
+              )}
+              latitude={Number(
+                vehicle.MonitoredVehicleJourney.VehicleLocation.Latitude
+              )}
+              onClick={(e) => {
+                e.originalEvent.stopPropagation();
+                setPopupInfo({
+                  type: "vehicle",
+                  data: vehicle,
+                  latitude: Number(
+                    vehicle.MonitoredVehicleJourney.VehicleLocation.Latitude
+                  ),
+                  longitude: Number(
+                    vehicle.MonitoredVehicleJourney.VehicleLocation.Longitude
+                  ),
+                });
+                if (lineRef) {
+                  handleMarkerClick(lineRef);
+                }
+              }}
+              style={{ zIndex: 2 }}
+            >
+              <div className="text-xl cursor-pointer">{vehicleEmoji}</div>
+            </Marker>
+          );
+        })}
         {showStops &&
           stops.map((stop) => (
             <Marker
@@ -98,8 +121,9 @@ export const MuniMap = memo(
                   longitude: Number(stop["Location/Longitude"]),
                 });
               }}
+              style={{ zIndex: 1 }}
             >
-              <div className="text-xl cursor-pointer">🚏</div>
+              <div className="text-xl cursor-pointer">📍</div>
             </Marker>
           ))}
         {popupInfo && (
@@ -109,6 +133,7 @@ export const MuniMap = memo(
             onClose={() => setPopupInfo(null)}
             closeButton
             closeOnClick={false}
+            style={{ zIndex: 10 }}
           >
             {popupInfo.type === "vehicle" ? (
               <VehiclePopup vehicle={popupInfo.data as VehicleActivity} />
