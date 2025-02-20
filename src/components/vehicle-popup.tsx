@@ -1,45 +1,41 @@
 import { VehicleActivity } from "@/types/transit-types";
 
+const InfoItem = ({ label, value }: { label: string; value: string }) => (
+  <p>
+    <span className="font-semibold">{label}:</span> {value}
+  </p>
+);
+
 export function VehiclePopup({ vehicle }: { vehicle: VehicleActivity }) {
   const journey = vehicle.MonitoredVehicleJourney;
 
   return (
     <div className="p-3 text-black max-w-[300px]">
       <h3 className="font-bold mb-2">Vehicle Information</h3>
-      <div className="space-y-1">
-        <div>
-          <b>Line:</b> {journey.LineRef}
-        </div>
-        <div>
-          <b>Vehicle ID:</b> {journey.VehicleRef}
-        </div>
-        <div>
-          <b>Direction:</b> {journey.DirectionRef || "N/A"}
-        </div>
-        <div>
-          <b>Route Name:</b> {journey.PublishedLineName || "N/A"}
-        </div>
-        <div>
-          <b>Operator:</b> {journey.OperatorRef}
-        </div>
-        <div>
-          <b>Origin:</b> {journey.OriginName || "N/A"}
-        </div>
-        <div>
-          <b>Destination:</b> {journey.DestinationName || "N/A"}
-        </div>
-        <div>
-          <b>Status:</b> {journey.Monitored ? "Monitored" : "Not Monitored"}
-        </div>
-        <div>
-          <b>Congestion:</b> {journey.InCongestion ? "Yes" : "No"}
-        </div>
-        <div>
-          <b>Occupancy:</b> {journey.Occupancy || "N/A"}
-        </div>
-        <div>
-          <b>Bearing:</b> {journey.Bearing}°
-        </div>
+      <div className="flex flex-col space-y-1">
+        <InfoItem label="Line" value={journey.LineRef || "N/A"} />
+        <InfoItem label="Vehicle ID" value={journey.VehicleRef} />
+        <InfoItem label="Direction" value={journey.DirectionRef || "N/A"} />
+        <InfoItem
+          label="Route Name"
+          value={journey.PublishedLineName || "N/A"}
+        />
+        <InfoItem label="Operator" value={journey.OperatorRef} />
+        <InfoItem label="Origin" value={journey.OriginName || "N/A"} />
+        <InfoItem
+          label="Destination"
+          value={journey.DestinationName || "N/A"}
+        />
+        <InfoItem
+          label="Status"
+          value={journey.Monitored ? "Monitored" : "Not Monitored"}
+        />
+        <InfoItem
+          label="Congestion"
+          value={journey.InCongestion ? "Yes" : "No"}
+        />
+        <InfoItem label="Occupancy" value={journey.Occupancy || "N/A"} />
+        <InfoItem label="Bearing" value={`${journey.Bearing}°`} />
         <div>
           <b>Last Updated:</b>{" "}
           {new Date(vehicle.RecordedAtTime).toLocaleString()}
