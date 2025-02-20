@@ -64,6 +64,12 @@ export function Content({ lines, stops, operators }: ContentProps) {
     setSelectedOperator,
     selectedLine,
     setSelectedLine,
+    showBuses,
+    setShowBuses,
+    showMetro,
+    setShowMetro,
+    showCableway,
+    setShowCableway,
   } = useTransitData(DEFAULT_AGENCY);
 
   const [showStops, setShowStops] = useState(true);
@@ -72,8 +78,31 @@ export function Content({ lines, stops, operators }: ContentProps) {
   const [routeStops, setRouteStops] = useState<Tables<"stops">[]>([]);
 
   const filteredVehicles = useMemo(() => {
-    return filterVehiclesByLine(vehicles, selectedLine, lines);
-  }, [vehicles, selectedLine, lines]);
+    let filtered = filterVehiclesByLine(vehicles, selectedLine, lines);
+
+    // Filter by transport mode
+    filtered = filtered.filter((vehicle) => {
+      const lineRef = vehicle.MonitoredVehicleJourney.LineRef;
+      const line = lines.find(
+        (l) => l.Id === lineRef || l.SiriLineRef === lineRef
+      );
+
+      if (!line) return false;
+
+      switch (line.TransportMode?.toLowerCase()) {
+        case "bus":
+          return showBuses;
+        case "metro":
+          return showMetro;
+        case "cableway":
+          return showCableway;
+        default:
+          return true;
+      }
+    });
+
+    return filtered;
+  }, [vehicles, selectedLine, lines, showBuses, showMetro, showCableway]);
 
   const handleOperatorChange = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -144,6 +173,12 @@ export function Content({ lines, stops, operators }: ContentProps) {
             showStops={showStops}
             onToggleStops={toggleStopMarkers}
             onResetFilter={handleResetFilter}
+            showBuses={showBuses}
+            showMetro={showMetro}
+            showCableway={showCableway}
+            onToggleBuses={() => setShowBuses((prev) => !prev)}
+            onToggleMetro={() => setShowMetro((prev) => !prev)}
+            onToggleCableway={() => setShowCableway((prev) => !prev)}
           />
         </div>
       </div>
