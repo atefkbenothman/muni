@@ -11,11 +11,7 @@ export const useRealtimeVehicles = (refreshInterval: number) => {
   const fetchVehicles = async () => {
     try {
       const data = await getVehicleMonitoring();
-      const vehicleActivity =
-        data["Siri"]["ServiceDelivery"]["VehicleMonitoringDelivery"][
-          "VehicleActivity"
-        ];
-      setVehicles(vehicleActivity);
+      setVehicles(data);
       setCountdown(refreshInterval)
     } catch (error) {
       console.error("Error fetching vehicle data:", error);

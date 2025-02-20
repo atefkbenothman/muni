@@ -1,5 +1,7 @@
 "use server"
 
+import { VehicleActivity } from "@/types/transit-types";
+
 const apiKey = process.env.TRANSIT_API_KEY;
 const agency = "SF";
 const operatorId = "SF"
@@ -15,5 +17,5 @@ export async function getVehicleMonitoring() {
     }
   );
   const data = await response.json();
-  return data
+  return data["Siri"]["ServiceDelivery"]["VehicleMonitoringDelivery"]["VehicleActivity"] as VehicleActivity[];
 }
