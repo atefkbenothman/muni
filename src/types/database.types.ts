@@ -90,6 +90,45 @@ export type Database = {
         }
         Relationships: []
       }
+      patterns: {
+        Row: {
+          DestinationDisplayView: Json | null
+          DirectionRef: string | null
+          FromDate: string | null
+          LineRef: string | null
+          LinksInSequence: Json | null
+          Name: string | null
+          PointsInSequence: Json | null
+          serviceJourneyPatternRef: number
+          ToDate: string | null
+          TripCount: number | null
+        }
+        Insert: {
+          DestinationDisplayView?: Json | null
+          DirectionRef?: string | null
+          FromDate?: string | null
+          LineRef?: string | null
+          LinksInSequence?: Json | null
+          Name?: string | null
+          PointsInSequence?: Json | null
+          serviceJourneyPatternRef: number
+          ToDate?: string | null
+          TripCount?: number | null
+        }
+        Update: {
+          DestinationDisplayView?: Json | null
+          DirectionRef?: string | null
+          FromDate?: string | null
+          LineRef?: string | null
+          LinksInSequence?: Json | null
+          Name?: string | null
+          PointsInSequence?: Json | null
+          serviceJourneyPatternRef?: number
+          ToDate?: string | null
+          TripCount?: number | null
+        }
+        Relationships: []
+      }
       stops: {
         Row: {
           "Extensions/LocationType": string | null
