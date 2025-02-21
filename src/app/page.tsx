@@ -1,34 +1,34 @@
-"use server";
-import { createClient } from "@/utils/server";
-import { Content } from "@/components/content";
+"use server"
+import { createClient } from "@/utils/server"
+import { Content } from "@/components/content"
 
 export default async function Home() {
-  const client = await createClient();
+  const client = await createClient()
 
   const { data: linesData, error: linesError } = await client
     .from("lines")
-    .select("*");
+    .select("*")
 
   const { data: operatorsData, error: operatorsError } = await client
     .from("operators")
-    .select("*");
+    .select("*")
 
   const { data: stopsData, error: stopsError } = await client
     .from("stops")
-    .select("*");
+    .select("*")
 
-  const lines = linesData ?? [];
-  const stops = stopsData ?? [];
-  const operators = operatorsData ?? [];
+  const lines = linesData ?? []
+  const stops = stopsData ?? []
+  const operators = operatorsData ?? []
 
   return (
     <div className="flex h-screen flex-col items-center justify-center p-4">
       <div className="w-full p-6">
-        <h1 className="text-lg font-semibold text-center">
+        <h1 className="text-center text-lg font-semibold">
           San Francisco Muni Map
         </h1>
       </div>
       <Content lines={lines} stops={stops} operators={operators} />
     </div>
-  );
+  )
 }

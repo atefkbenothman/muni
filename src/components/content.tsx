@@ -1,67 +1,67 @@
-"use client";
+"use client"
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo } from "react"
 
-import "mapbox-gl/dist/mapbox-gl.css";
+import "mapbox-gl/dist/mapbox-gl.css"
 
-import type { VehicleActivity } from "@/types/transit-types";
-import type { Tables } from "@/types/database.types";
-import type { PopupInfo } from "@/components/muni-map";
+import type { VehicleActivity } from "@/types/transit-types"
+import type { Tables } from "@/types/database.types"
+import type { PopupInfo } from "@/components/muni-map"
 
-import { MapControls } from "@/components/map-controls";
-import { MuniMap } from "@/components/muni-map";
-import { Countdown } from "@/components/countdown";
+import { MapControls } from "@/components/map-controls"
+import { MuniMap } from "@/components/muni-map"
+import { Countdown } from "@/components/countdown"
 
-import { useRealtimeVehicles } from "@/hooks/use-vehicles";
-import { useTransitData } from "@/hooks/use-transit";
-import { getPatternsByLine } from "@/actions/muni-actions";
+import { useRealtimeVehicles } from "@/hooks/use-vehicles"
+import { useTransitData } from "@/hooks/use-transit"
+import { getPatternsByLine } from "@/actions/muni-actions"
 
-const REFRESH_INTERVAL = 600;
-const DEFAULT_AGENCY = "SF";
+const REFRESH_INTERVAL = 600
+const DEFAULT_AGENCY = "SF"
 
 const filterVehiclesByLine = (
   vehicles: VehicleActivity[],
   selectedLine: string,
-  transitLines: Tables<"lines">[]
+  transitLines: Tables<"lines">[],
 ): VehicleActivity[] => {
-  if (!selectedLine || selectedLine === "All") return vehicles;
+  if (!selectedLine || selectedLine === "All") return vehicles
   // Find the matching transit line
   const matchingLine = transitLines.find(
-    (line) => line.Id === selectedLine || line.SiriLineRef === selectedLine
-  );
+    (line) => line.Id === selectedLine || line.SiriLineRef === selectedLine,
+  )
   return vehicles.filter((vehicle) => {
-    const lineRef = vehicle.MonitoredVehicleJourney.LineRef;
+    const lineRef = vehicle.MonitoredVehicleJourney.LineRef
     // Check against both the SiriLineRef and the direct LineRef
-    return lineRef === matchingLine?.SiriLineRef || lineRef === selectedLine;
-  });
-};
+    return lineRef === matchingLine?.SiriLineRef || lineRef === selectedLine
+  })
+}
 
 const parseStopRefs = (pointsInSequence: string | null): string[] => {
-  if (!pointsInSequence) return [];
+  if (!pointsInSequence) return []
   const cleanedPoints = pointsInSequence.replace(
     /(^|[{,\s])'([^']*)'/g,
-    '$1"$2"'
-  );
+    '$1"$2"',
+  )
   try {
-    const parsed = JSON.parse(cleanedPoints);
+    const parsed = JSON.parse(cleanedPoints)
     return parsed.StopPointInJourneyPattern.map(
-      (stop: any) => stop.ScheduledStopPointRef
-    );
+      (stop: any) => stop.ScheduledStopPointRef,
+    )
   } catch (err) {
-    console.log(cleanedPoints);
-    console.error("Error parsing stop refs:", err);
-    return [];
+    console.log(cleanedPoints)
+    console.error("Error parsing stop refs:", err)
+    return []
   }
-};
+}
 
 type ContentProps = {
-  lines: Tables<"lines">[];
-  stops: Tables<"stops">[];
-  operators: Tables<"operators">[];
-};
+  lines: Tables<"lines">[]
+  stops: Tables<"stops">[]
+  operators: Tables<"operators">[]
+}
 
 export function Content({ lines, stops, operators }: ContentProps) {
-  const { vehicles } = useRealtimeVehicles(REFRESH_INTERVAL);
+  const { vehicles } = useRealtimeVehicles(REFRESH_INTERVAL)
 
   const {
     selectedOperator,
@@ -74,88 +74,88 @@ export function Content({ lines, stops, operators }: ContentProps) {
     setShowMetro,
     showCableway,
     setShowCableway,
-  } = useTransitData(DEFAULT_AGENCY);
+  } = useTransitData(DEFAULT_AGENCY)
 
-  const [showStops, setShowStops] = useState(true);
-  const [popupInfo, setPopupInfo] = useState<PopupInfo | null>(null);
+  const [showStops, setShowStops] = useState(true)
+  const [popupInfo, setPopupInfo] = useState<PopupInfo | null>(null)
 
-  const [routeStops, setRouteStops] = useState<Tables<"stops">[]>([]);
+  const [routeStops, setRouteStops] = useState<Tables<"stops">[]>([])
 
   const filteredVehicles = useMemo(() => {
-    let filtered = filterVehiclesByLine(vehicles, selectedLine, lines);
+    let filtered = filterVehiclesByLine(vehicles, selectedLine, lines)
 
     // Filter by transport mode
     filtered = filtered.filter((vehicle) => {
-      const lineRef = vehicle.MonitoredVehicleJourney.LineRef;
+      const lineRef = vehicle.MonitoredVehicleJourney.LineRef
       const line = lines.find(
-        (l) => l.Id === lineRef || l.SiriLineRef === lineRef
-      );
+        (l) => l.Id === lineRef || l.SiriLineRef === lineRef,
+      )
 
-      if (!line) return false;
+      if (!line) return false
 
       switch (line.TransportMode?.toLowerCase()) {
         case "bus":
-          return showBuses;
+          return showBuses
         case "metro":
-          return showMetro;
+          return showMetro
         case "cableway":
-          return showCableway;
+          return showCableway
         default:
-          return true;
+          return true
       }
-    });
+    })
 
-    return filtered;
-  }, [vehicles, selectedLine, lines, showBuses, showMetro, showCableway]);
+    return filtered
+  }, [vehicles, selectedLine, lines, showBuses, showMetro, showCableway])
 
   const handleOperatorChange = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
-      setSelectedOperator(e.target.value);
+      setSelectedOperator(e.target.value)
     },
-    []
-  );
+    [],
+  )
 
   const handleLineChange = useCallback(
     async (e: React.ChangeEvent<HTMLSelectElement>) => {
-      setSelectedLine(e.target.value);
-      const patterns = await getPatternsByLine(e.target.value);
+      setSelectedLine(e.target.value)
+      const patterns = await getPatternsByLine(e.target.value)
       const allStopRefs = patterns.flatMap((pattern) =>
-        parseStopRefs(pattern.PointsInSequence as string)
-      );
+        parseStopRefs(pattern.PointsInSequence as string),
+      )
       const matchedStops = stops.filter((stop) =>
-        allStopRefs.includes(stop.id.toString())
-      );
-      setRouteStops(matchedStops);
+        allStopRefs.includes(stop.id.toString()),
+      )
+      setRouteStops(matchedStops)
     },
-    []
-  );
+    [],
+  )
 
   const handleMarkerClick = useCallback(async (lineRef: string) => {
-    setSelectedLine(lineRef);
-    setShowStops(true);
-    const patterns = await getPatternsByLine(lineRef);
+    setSelectedLine(lineRef)
+    setShowStops(true)
+    const patterns = await getPatternsByLine(lineRef)
     const allStopRefs = patterns.flatMap((pattern) =>
-      parseStopRefs(pattern.PointsInSequence as string)
-    );
+      parseStopRefs(pattern.PointsInSequence as string),
+    )
     const matchedStops = stops.filter((stop) =>
-      allStopRefs.includes(stop.id.toString())
-    );
-    setRouteStops(matchedStops);
-  }, []);
+      allStopRefs.includes(stop.id.toString()),
+    )
+    setRouteStops(matchedStops)
+  }, [])
 
   const handleResetFilter = useCallback(() => {
-    setSelectedLine("All");
-    setRouteStops([]);
-  }, []);
+    setSelectedLine("All")
+    setRouteStops([])
+  }, [])
 
   const toggleStopMarkers = useCallback(() => {
-    setShowStops((prev) => !prev);
-  }, []);
+    setShowStops((prev) => !prev)
+  }, [])
 
   return (
     <>
-      <div className="grid grid-cols-1 lg:grid-cols-8 w-full gap-4">
-        <div className="col-span-full lg:col-span-6 order-2 lg:order-1 h-[600px] rounded-sm overflow-hidden">
+      <div className="grid w-full grid-cols-1 gap-4 lg:grid-cols-8">
+        <div className="order-2 col-span-full h-[600px] overflow-hidden rounded-sm lg:order-1 lg:col-span-6">
           <MuniMap
             filteredVehicles={filteredVehicles}
             showStops={showStops}
@@ -166,7 +166,7 @@ export function Content({ lines, stops, operators }: ContentProps) {
             lines={lines}
           />
         </div>
-        <div className="col-span-full lg:col-span-2 order-1 lg:order-2 lg:px-4 py-2">
+        <div className="order-1 col-span-full py-2 lg:order-2 lg:col-span-2 lg:px-4">
           <MapControls
             operators={operators}
             selectedOperator={selectedOperator}
@@ -188,5 +188,5 @@ export function Content({ lines, stops, operators }: ContentProps) {
       </div>
       <Countdown />
     </>
-  );
+  )
 }

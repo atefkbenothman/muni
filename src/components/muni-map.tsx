@@ -1,46 +1,46 @@
-"use client";
+"use client"
 
-import { memo } from "react";
+import { memo } from "react"
 
-import Map, { Marker, Popup } from "react-map-gl/mapbox";
+import Map, { Marker, Popup } from "react-map-gl/mapbox"
 
-import type { Tables } from "@/types/database.types";
-import type { VehicleActivity } from "@/types/transit-types";
+import type { Tables } from "@/types/database.types"
+import type { VehicleActivity } from "@/types/transit-types"
 
-import { StopPopup } from "@/components/stop-popup";
-import { VehiclePopup } from "@/components/vehicle-popup";
+import { StopPopup } from "@/components/stop-popup"
+import { VehiclePopup } from "@/components/vehicle-popup"
 
-const MAPBOX_ACCESS_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || "";
+const MAPBOX_ACCESS_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || ""
 
 const bounds: [number, number, number, number] = [
   -122.66336,
   37.492987, // Southwest coordinates
   -122.250481,
   37.871651, // Northeast coordinates
-];
+]
 
 const icons = {
   bus: "🚎",
   metro: "🚃",
   cableway: "🚋",
-};
+}
 
 export type PopupInfo = {
-  type: "vehicle" | "stop";
-  data: VehicleActivity | Tables<"stops">;
-  latitude: number;
-  longitude: number;
-};
+  type: "vehicle" | "stop"
+  data: VehicleActivity | Tables<"stops">
+  latitude: number
+  longitude: number
+}
 
 type MapProps = {
-  filteredVehicles: VehicleActivity[];
-  showStops: boolean;
-  stops: Tables<"stops">[];
-  popupInfo: PopupInfo | null;
-  setPopupInfo: (info: PopupInfo | null) => void;
-  handleMarkerClick: (lineRef: string) => void;
-  lines: Tables<"lines">[];
-};
+  filteredVehicles: VehicleActivity[]
+  showStops: boolean
+  stops: Tables<"stops">[]
+  popupInfo: PopupInfo | null
+  setPopupInfo: (info: PopupInfo | null) => void
+  handleMarkerClick: (lineRef: string) => void
+  lines: Tables<"lines">[]
+}
 
 export const MuniMap = memo(
   ({
@@ -66,48 +66,48 @@ export const MuniMap = memo(
         maxBounds={bounds}
       >
         {filteredVehicles.map((vehicle, idx) => {
-          const lineRef = vehicle.MonitoredVehicleJourney.LineRef;
+          const lineRef = vehicle.MonitoredVehicleJourney.LineRef
           if (!lineRef) {
-            return;
+            return
           }
           const transportMode = lines.find(
-            (line) => line.Id === lineRef
-          )?.TransportMode;
+            (line) => line.Id === lineRef,
+          )?.TransportMode
 
           const vehicleEmoji = transportMode
             ? icons[transportMode as keyof typeof icons]
-            : "🚗";
+            : "🚗"
 
           return (
             <Marker
               key={idx}
               longitude={Number(
-                vehicle.MonitoredVehicleJourney.VehicleLocation.Longitude
+                vehicle.MonitoredVehicleJourney.VehicleLocation.Longitude,
               )}
               latitude={Number(
-                vehicle.MonitoredVehicleJourney.VehicleLocation.Latitude
+                vehicle.MonitoredVehicleJourney.VehicleLocation.Latitude,
               )}
               onClick={(e) => {
-                e.originalEvent.stopPropagation();
+                e.originalEvent.stopPropagation()
                 setPopupInfo({
                   type: "vehicle",
                   data: vehicle,
                   latitude: Number(
-                    vehicle.MonitoredVehicleJourney.VehicleLocation.Latitude
+                    vehicle.MonitoredVehicleJourney.VehicleLocation.Latitude,
                   ),
                   longitude: Number(
-                    vehicle.MonitoredVehicleJourney.VehicleLocation.Longitude
+                    vehicle.MonitoredVehicleJourney.VehicleLocation.Longitude,
                   ),
-                });
+                })
                 if (lineRef) {
-                  handleMarkerClick(lineRef);
+                  handleMarkerClick(lineRef)
                 }
               }}
               style={{ zIndex: 2 }}
             >
-              <div className="text-xl cursor-pointer">{vehicleEmoji}</div>
+              <div className="cursor-pointer text-xl">{vehicleEmoji}</div>
             </Marker>
-          );
+          )
         })}
         {showStops &&
           stops.map((stop) => (
@@ -116,17 +116,17 @@ export const MuniMap = memo(
               longitude={Number(stop["Location/Longitude"])}
               latitude={Number(stop["Location/Latitude"])}
               onClick={(e) => {
-                e.originalEvent.stopPropagation();
+                e.originalEvent.stopPropagation()
                 setPopupInfo({
                   type: "stop",
                   data: stop,
                   latitude: Number(stop["Location/Latitude"]),
                   longitude: Number(stop["Location/Longitude"]),
-                });
+                })
               }}
               style={{ zIndex: 1 }}
             >
-              <div className="text-xl cursor-pointer">📍</div>
+              <div className="cursor-pointer text-xl">📍</div>
             </Marker>
           ))}
         {popupInfo && (
@@ -146,6 +146,6 @@ export const MuniMap = memo(
           </Popup>
         )}
       </Map>
-    );
-  }
-);
+    )
+  },
+)

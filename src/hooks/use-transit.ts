@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useState } from "react"
 
 export const useTransitData = (initialOperator: string) => {
-  const [selectedOperator, setSelectedOperator] = useState<string>(initialOperator);
-  const [selectedLine, setSelectedLine] = useState<string>("All");
-  const [showBuses, setShowBuses] = useState<boolean>(true);
-  const [showMetro, setShowMetro] = useState<boolean>(true);
-  const [showCableway, setShowCableway] = useState<boolean>(true);
+  const [selectedOperator, setSelectedOperator] =
+    useState<string>(initialOperator)
+  const [selectedLine, setSelectedLine] = useState<string>("All")
+  const [showBuses, setShowBuses] = useState<boolean>(true)
+  const [showMetro, setShowMetro] = useState<boolean>(true)
+  const [showCableway, setShowCableway] = useState<boolean>(true)
 
   return {
     selectedOperator,
@@ -18,5 +19,5 @@ export const useTransitData = (initialOperator: string) => {
     setShowMetro,
     showCableway,
     setShowCableway,
-  };
-};
+  }
+}

@@ -1,23 +1,23 @@
-import { memo } from "react";
-import type { Tables } from "@/types/database.types";
+import { memo } from "react"
+import type { Tables } from "@/types/database.types"
 
 type MapControlProps = {
-  operators: Tables<"operators">[];
-  selectedOperator: string;
-  onOperatorChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-  lines: Tables<"lines">[];
-  selectedLine: string;
-  onLineChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-  showStops: boolean;
-  onToggleStops: () => void;
-  onResetFilter: () => void;
-  showBuses: boolean;
-  showMetro: boolean;
-  showCableway: boolean;
-  onToggleBuses: () => void;
-  onToggleMetro: () => void;
-  onToggleCableway: () => void;
-};
+  operators: Tables<"operators">[]
+  selectedOperator: string
+  onOperatorChange: (e: React.ChangeEvent<HTMLSelectElement>) => void
+  lines: Tables<"lines">[]
+  selectedLine: string
+  onLineChange: (e: React.ChangeEvent<HTMLSelectElement>) => void
+  showStops: boolean
+  onToggleStops: () => void
+  onResetFilter: () => void
+  showBuses: boolean
+  showMetro: boolean
+  showCableway: boolean
+  onToggleBuses: () => void
+  onToggleMetro: () => void
+  onToggleCableway: () => void
+}
 
 export const MapControls = memo(
   ({
@@ -44,7 +44,7 @@ export const MapControls = memo(
           <select
             value={selectedOperator}
             onChange={onOperatorChange}
-            className="w-full border p-1 rounded-sm"
+            className="w-full rounded-sm border p-1"
           >
             {operators.map((operator) => (
               <option key={operator.Id} value={operator.Id}>
@@ -59,7 +59,7 @@ export const MapControls = memo(
           <select
             value={selectedLine}
             onChange={onLineChange}
-            className="w-full border p-1 rounded-sm"
+            className="w-full rounded-sm border p-1"
           >
             <option>All</option>
             {lines.map((line) => (
@@ -78,7 +78,7 @@ export const MapControls = memo(
             <label className="text-sm">Show Stops</label>
             <button
               onClick={onToggleStops}
-              className={`px-3 py-1 rounded-sm ${
+              className={`rounded-sm px-3 py-1 ${
                 showStops
                   ? "bg-blue-500 text-white"
                   : "bg-gray-300 text-gray-700"
@@ -93,7 +93,7 @@ export const MapControls = memo(
             <label className="text-sm">Show Buses 🚎</label>
             <button
               onClick={onToggleBuses}
-              className={`px-3 py-1 rounded-sm ${
+              className={`rounded-sm px-3 py-1 ${
                 showBuses
                   ? "bg-blue-500 text-white"
                   : "bg-gray-300 text-gray-700"
@@ -108,7 +108,7 @@ export const MapControls = memo(
             <label className="text-sm">Show Metro 🚃</label>
             <button
               onClick={onToggleMetro}
-              className={`px-3 py-1 rounded-sm ${
+              className={`rounded-sm px-3 py-1 ${
                 showMetro
                   ? "bg-blue-500 text-white"
                   : "bg-gray-300 text-gray-700"
@@ -123,7 +123,7 @@ export const MapControls = memo(
             <label className="text-sm">Show Cableway 🚋</label>
             <button
               onClick={onToggleCableway}
-              className={`px-3 py-1 rounded-sm ${
+              className={`rounded-sm px-3 py-1 ${
                 showCableway
                   ? "bg-blue-500 text-white"
                   : "bg-gray-300 text-gray-700"
@@ -144,6 +144,6 @@ export const MapControls = memo(
           </button>
         </div>
       </div>
-    );
-  }
-);
+    )
+  },
+)

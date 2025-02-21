@@ -1,17 +1,17 @@
-import type { VehicleActivity } from "@/types/transit-types";
+import type { VehicleActivity } from "@/types/transit-types"
 
 const InfoItem = ({ label, value }: { label: string; value: string }) => (
   <p>
     <span className="font-semibold">{label}:</span> {value}
   </p>
-);
+)
 
 export function VehiclePopup({ vehicle }: { vehicle: VehicleActivity }) {
-  const journey = vehicle.MonitoredVehicleJourney;
+  const journey = vehicle.MonitoredVehicleJourney
 
   return (
-    <div className="p-3 text-black max-w-[300px]">
-      <h3 className="font-bold mb-2">Vehicle Information</h3>
+    <div className="max-w-[300px] p-3 text-black">
+      <h3 className="mb-2 font-bold">Vehicle Information</h3>
       <div className="flex flex-col space-y-1">
         <InfoItem label="Line" value={journey.LineRef || "N/A"} />
         <InfoItem label="Vehicle ID" value={journey.VehicleRef} />
@@ -42,5 +42,5 @@ export function VehiclePopup({ vehicle }: { vehicle: VehicleActivity }) {
         </div>
       </div>
     </div>
-  );
+  )
 }
