@@ -1,4 +1,4 @@
-import { Tables } from "@/types/database.types";
+import type { Tables } from "@/types/database.types";
 
 const InfoItem = ({
   label,

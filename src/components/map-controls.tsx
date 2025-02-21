@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { Tables } from "@/types/database.types";
+import type { Tables } from "@/types/database.types";
 
 type MapControlProps = {
   operators: Tables<"operators">[];

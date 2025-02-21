@@ -1,4 +1,4 @@
-import { VehicleActivity } from "@/types/transit-types";
+import type { VehicleActivity } from "@/types/transit-types";
 
 const InfoItem = ({ label, value }: { label: string; value: string }) => (
   <p>

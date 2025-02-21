@@ -1,15 +1,19 @@
 "use client";
 
 import { useState, useCallback, useMemo } from "react";
-import { MapControls } from "@/components/map-controls";
-import type { VehicleActivity } from "@/types/transit-types";
-import { MuniMap } from "@/components/muni-map";
+
 import "mapbox-gl/dist/mapbox-gl.css";
+
+import type { VehicleActivity } from "@/types/transit-types";
+import type { Tables } from "@/types/database.types";
+import type { PopupInfo } from "@/components/muni-map";
+
+import { MapControls } from "@/components/map-controls";
+import { MuniMap } from "@/components/muni-map";
+import { Countdown } from "@/components/countdown";
+
 import { useRealtimeVehicles } from "@/hooks/use-vehicles";
 import { useTransitData } from "@/hooks/use-transit";
-import { PopupInfo } from "@/components/muni-map";
-import { Tables } from "@/types/database.types";
-import { Countdown } from "@/components/countdown";
 import { getPatternsByLine } from "@/actions/muni-actions";
 
 const REFRESH_INTERVAL = 600;

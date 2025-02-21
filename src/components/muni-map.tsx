@@ -1,11 +1,14 @@
 "use client";
 
 import { memo } from "react";
-import { Tables } from "@/types/database.types";
-import { VehicleActivity } from "@/types/transit-types";
+
 import Map, { Marker, Popup } from "react-map-gl/mapbox";
-import { StopPopup } from "./stop-popup";
-import { VehiclePopup } from "./vehicle-popup";
+
+import type { Tables } from "@/types/database.types";
+import type { VehicleActivity } from "@/types/transit-types";
+
+import { StopPopup } from "@/components/stop-popup";
+import { VehiclePopup } from "@/components/vehicle-popup";
 
 const MAPBOX_ACCESS_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || "";
 

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react"
-import { getVehicleMonitoring } from "@/actions/muni-actions";
 import type { VehicleActivity } from "@/types/transit-types"
+import { getVehicleMonitoring } from "@/actions/muni-actions";
 
 export const useRealtimeVehicles = (refreshInterval: number) => {
   const [countdown, setCountdown] = useState<number>(refreshInterval);
