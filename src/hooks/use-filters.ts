@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react"
 
-type TransitModes = {
+export type TransitModes = {
   buses: boolean
   metro: boolean
   cableway: boolean

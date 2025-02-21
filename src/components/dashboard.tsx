@@ -7,7 +7,7 @@ import "mapbox-gl/dist/mapbox-gl.css"
 import type { TransitLine, TransitStop, TransitOperator } from "@/types/transit-types"
 import type { PopupInfo } from "@/components/map"
 
-import { filterVehiclesByLine, filterVehiclesByMode, parseStopRefs } from "@/utils/transit"
+import { filterVehiclesByLine, filterVehiclesByMode } from "@/utils/transit"
 
 import { Controls } from "@/components/controls"
 import { Map } from "@/components/map"
@@ -15,7 +15,7 @@ import { Countdown } from "@/components/countdown"
 
 import { useRealtimeVehicles } from "@/hooks/use-vehicles"
 import { useStops } from "@/hooks/use-stops"
-import { useFilters } from "@/hooks/use-filters"
+import { useFilters, type TransitModes } from "@/hooks/use-filters"
 
 /* Globals */
 const REFRESH_INTERVAL = 600
@@ -79,6 +79,10 @@ export function Dashboard({ transitLines, transitStops, transitOperators }: Cont
     toggleStops(!showStops)
   }, [showStops])
 
+  const handleToggleBuses = useCallback(() => toggleTransitMode("buses"), [])
+  const handleToggleMetro = useCallback(() => toggleTransitMode("metro"), [])
+  const handleToggleCableway = useCallback(() => toggleTransitMode("cableway"), [])
+
   return (
     <>
       <div className="grid w-full grid-cols-1 gap-4 lg:grid-cols-8">
@@ -107,9 +111,9 @@ export function Dashboard({ transitLines, transitStops, transitOperators }: Cont
             showBuses={showBuses}
             showMetro={showMetro}
             showCableway={showCableway}
-            onToggleBuses={() => toggleTransitMode("buses")}
-            onToggleMetro={() => toggleTransitMode("metro")}
-            onToggleCableway={() => toggleTransitMode("cableway")}
+            onToggleBuses={handleToggleBuses}
+            onToggleMetro={handleToggleMetro}
+            onToggleCableway={handleToggleCableway}
           />
         </div>
       </div>
