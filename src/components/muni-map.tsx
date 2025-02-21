@@ -4,8 +4,7 @@ import { memo } from "react"
 
 import Map, { Marker, Popup } from "react-map-gl/mapbox"
 
-import type { Tables } from "@/types/database.types"
-import type { VehicleActivity } from "@/types/transit-types"
+import type { VehicleActivity, TransitStop, TransitLine } from "@/types/transit-types"
 
 import { StopPopup } from "@/components/stop-popup"
 import { VehiclePopup } from "@/components/vehicle-popup"
@@ -27,7 +26,7 @@ const icons = {
 
 export type PopupInfo = {
   type: "vehicle" | "stop"
-  data: VehicleActivity | Tables<"stops">
+  data: VehicleActivity | TransitStop
   latitude: number
   longitude: number
 }
@@ -35,11 +34,11 @@ export type PopupInfo = {
 type MapProps = {
   filteredVehicles: VehicleActivity[]
   showStops: boolean
-  stops: Tables<"stops">[]
+  lines: TransitLine[]
+  stops: TransitStop[]
   popupInfo: PopupInfo | null
   setPopupInfo: (info: PopupInfo | null) => void
   handleMarkerClick: (lineRef: string) => void
-  lines: Tables<"lines">[]
 }
 
 export const MuniMap = memo(
@@ -141,7 +140,7 @@ export const MuniMap = memo(
             {popupInfo.type === "vehicle" ? (
               <VehiclePopup vehicle={popupInfo.data as VehicleActivity} />
             ) : (
-              <StopPopup stop={popupInfo.data as Tables<"stops">} />
+              <StopPopup stop={popupInfo.data as TransitStop} />
             )}
           </Popup>
         )}

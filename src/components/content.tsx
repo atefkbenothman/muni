@@ -132,7 +132,7 @@ export function Content({ transitLines, transitStops, transitOperators }: Conten
           />
         </div>
       </div>
-      <Countdown />
+      <Countdown refreshInterval={REFRESH_INTERVAL} />
     </>
   )
 }

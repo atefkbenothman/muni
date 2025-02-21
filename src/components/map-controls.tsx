@@ -1,11 +1,11 @@
 import { memo } from "react"
-import type { Tables } from "@/types/database.types"
+import type { TransitLine, TransitOperator } from "@/types/transit-types"
 
 type MapControlProps = {
-  operators: Tables<"operators">[]
+  operators: TransitOperator[]
   selectedOperator: string
   onOperatorChange: (e: React.ChangeEvent<HTMLSelectElement>) => void
-  lines: Tables<"lines">[]
+  lines: TransitLine[]
   selectedLine: string
   onLineChange: (e: React.ChangeEvent<HTMLSelectElement>) => void
   showStops: boolean
