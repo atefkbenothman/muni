@@ -14,12 +14,11 @@ import { Map } from "@/components/map"
 import { Countdown } from "@/components/countdown"
 
 import { useRealtimeVehicles } from "@/hooks/use-vehicles"
-import { useTransitData } from "@/hooks/use-transit"
-import { getPatternsByLine } from "@/actions/muni-actions"
+import { useStops } from "@/hooks/use-stops"
+import { useFilters } from "@/hooks/use-filters"
 
 /* Globals */
 const REFRESH_INTERVAL = 600
-const DEFAULT_AGENCY = "SF"
 
 type ContentProps = {
   transitLines: TransitLine[]
@@ -29,73 +28,56 @@ type ContentProps = {
 
 export function Dashboard({ transitLines, transitStops, transitOperators }: ContentProps) {
   const { vehicles } = useRealtimeVehicles(REFRESH_INTERVAL)
+  const { filters, selectOperator, selectLine, toggleTransitMode, toggleStops, resetFilters } = useFilters()
+  const { routeStops, clearRouteStops, updateRouteStops } = useStops(transitStops)
 
-  const {
-    selectedOperator,
-    setSelectedOperator,
-    selectedLine,
-    setSelectedLine,
-    showBuses,
-    setShowBuses,
-    showMetro,
-    setShowMetro,
-    showCableway,
-    setShowCableway,
-  } = useTransitData(DEFAULT_AGENCY)
+  const selectedLine = filters.selectedLine
+  const selectedOperator = filters.selectedOperator
 
-  const [showStops, setShowStops] = useState(true)
+  const showStops = filters.showStops
+  const showBuses = filters.visibleModes.buses
+  const showMetro = filters.visibleModes.metro
+  const showCableway = filters.visibleModes.cableway
+
   const [popupInfo, setPopupInfo] = useState<PopupInfo | null>(null)
-
-  const [routeStops, setRouteStops] = useState<TransitStop[]>([])
 
   const filteredVehicles = useMemo(() => {
     let filtered = filterVehiclesByLine(vehicles, selectedLine, transitLines)
     return filterVehiclesByMode(filtered, transitLines, { showBuses, showMetro, showCableway })
   }, [vehicles, selectedLine, transitLines, showBuses, showMetro, showCableway])
 
-  const handleOperatorChange = useCallback(
-    (e: React.ChangeEvent<HTMLSelectElement>) => {
-      setSelectedOperator(e.target.value)
-    },
-    [],
-  )
+  const handleOperatorChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+    selectOperator(e.target.value)
+  }, [])
 
-  const handleLineChange = useCallback(
-    async (e: React.ChangeEvent<HTMLSelectElement>) => {
-      setSelectedLine(e.target.value)
-      const patterns = await getPatternsByLine(e.target.value)
-      const allStopRefs = patterns.flatMap((pattern) =>
-        parseStopRefs(pattern.PointsInSequence as string),
-      )
-      const matchedStops = transitStops.filter((stop) =>
-        allStopRefs.includes(stop.id.toString()),
-      )
-      setRouteStops(matchedStops)
-    },
-    [],
-  )
+  const handleLineChange = useCallback(async (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const lineId = e.target.value
+
+    selectLine(lineId)
+
+    if (lineId === "All" ) {
+      clearRouteStops()
+    } else {
+      await updateRouteStops(lineId)
+    }
+
+  }, [])
 
   const handleMarkerClick = useCallback(async (lineRef: string) => {
-    setSelectedLine(lineRef)
-    setShowStops(true)
-    const patterns = await getPatternsByLine(lineRef)
-    const allStopRefs = patterns.flatMap((pattern) =>
-      parseStopRefs(pattern.PointsInSequence as string),
-    )
-    const matchedStops = transitStops.filter((stop) =>
-      allStopRefs.includes(stop.id.toString()),
-    )
-    setRouteStops(matchedStops)
+    selectLine(lineRef)
+    toggleStops(true)
+    await updateRouteStops(lineRef)
   }, [])
 
   const handleResetFilter = useCallback(() => {
-    setSelectedLine("All")
-    setRouteStops([])
+    resetFilters()
+    toggleStops(false)
+    clearRouteStops()
   }, [])
 
   const toggleStopMarkers = useCallback(() => {
-    setShowStops((prev) => !prev)
-  }, [])
+    toggleStops(!showStops)
+  }, [showStops])
 
   return (
     <>
@@ -116,7 +98,7 @@ export function Dashboard({ transitLines, transitStops, transitOperators }: Cont
             operators={transitOperators}
             selectedOperator={selectedOperator}
             onOperatorChange={handleOperatorChange}
-            lines={transitLines}
+            transitLines={transitLines}
             selectedLine={selectedLine}
             onLineChange={handleLineChange}
             showStops={showStops}
@@ -125,9 +107,9 @@ export function Dashboard({ transitLines, transitStops, transitOperators }: Cont
             showBuses={showBuses}
             showMetro={showMetro}
             showCableway={showCableway}
-            onToggleBuses={() => setShowBuses((prev) => !prev)}
-            onToggleMetro={() => setShowMetro((prev) => !prev)}
-            onToggleCableway={() => setShowCableway((prev) => !prev)}
+            onToggleBuses={() => toggleTransitMode("buses")}
+            onToggleMetro={() => toggleTransitMode("metro")}
+            onToggleCableway={() => toggleTransitMode("cableway")}
           />
         </div>
       </div>

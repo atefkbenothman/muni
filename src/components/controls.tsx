@@ -5,7 +5,7 @@ type ControlsProp = {
   operators: TransitOperator[]
   selectedOperator: string
   onOperatorChange: (e: React.ChangeEvent<HTMLSelectElement>) => void
-  lines: TransitLine[]
+  transitLines: TransitLine[]
   selectedLine: string
   onLineChange: (e: React.ChangeEvent<HTMLSelectElement>) => void
   showStops: boolean
@@ -24,7 +24,7 @@ export const Controls = memo(
     operators,
     selectedOperator,
     onOperatorChange,
-    lines,
+    transitLines,
     selectedLine,
     onLineChange,
     showStops,
@@ -62,7 +62,7 @@ export const Controls = memo(
             className="w-full rounded-sm border p-1"
           >
             <option>All</option>
-            {lines.map((line) => (
+            {transitLines.map((line) => (
               <option key={line.Id} value={line.Id}>
                 {line.Name} ({line.PublicCode})
               </option>
