@@ -2,7 +2,8 @@
 
 import { memo } from "react"
 
-import Map, { Marker, Popup } from "react-map-gl/mapbox"
+import { Map as ReactMap} from "react-map-gl/mapbox"
+import { Marker, Popup } from "react-map-gl/mapbox"
 
 import type { VehicleActivity, TransitStop, TransitLine } from "@/types/transit-types"
 
@@ -41,7 +42,7 @@ type MapProps = {
   handleMarkerClick: (lineRef: string) => void
 }
 
-export const MuniMap = memo(
+export const Map = memo(
   ({
     filteredVehicles,
     showStops,
@@ -52,7 +53,7 @@ export const MuniMap = memo(
     lines,
   }: MapProps) => {
     return (
-      <Map
+      <ReactMap
         mapboxAccessToken={MAPBOX_ACCESS_TOKEN}
         initialViewState={{
           longitude: -122.4194,
@@ -144,7 +145,7 @@ export const MuniMap = memo(
             )}
           </Popup>
         )}
-      </Map>
+      </ReactMap>
     )
   },
 )

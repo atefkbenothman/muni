@@ -5,12 +5,12 @@ import { useState, useCallback, useMemo } from "react"
 import "mapbox-gl/dist/mapbox-gl.css"
 
 import type { TransitLine, TransitStop, TransitOperator } from "@/types/transit-types"
-import type { PopupInfo } from "@/components/muni-map"
+import type { PopupInfo } from "@/components/map"
 
 import { filterVehiclesByLine, filterVehiclesByMode, parseStopRefs } from "@/utils/transit"
 
-import { MapControls } from "@/components/map-controls"
-import { MuniMap } from "@/components/muni-map"
+import { Controls } from "@/components/controls"
+import { Map } from "@/components/map"
 import { Countdown } from "@/components/countdown"
 
 import { useRealtimeVehicles } from "@/hooks/use-vehicles"
@@ -21,14 +21,13 @@ import { getPatternsByLine } from "@/actions/muni-actions"
 const REFRESH_INTERVAL = 600
 const DEFAULT_AGENCY = "SF"
 
-
 type ContentProps = {
   transitLines: TransitLine[]
   transitStops: TransitStop[]
   transitOperators: TransitOperator[]
 }
 
-export function Content({ transitLines, transitStops, transitOperators }: ContentProps) {
+export function Dashboard({ transitLines, transitStops, transitOperators }: ContentProps) {
   const { vehicles } = useRealtimeVehicles(REFRESH_INTERVAL)
 
   const {
@@ -102,7 +101,7 @@ export function Content({ transitLines, transitStops, transitOperators }: Conten
     <>
       <div className="grid w-full grid-cols-1 gap-4 lg:grid-cols-8">
         <div className="order-2 col-span-full h-[600px] overflow-hidden rounded-sm lg:order-1 lg:col-span-6">
-          <MuniMap
+          <Map
             filteredVehicles={filteredVehicles}
             showStops={showStops}
             stops={routeStops}
@@ -113,7 +112,7 @@ export function Content({ transitLines, transitStops, transitOperators }: Conten
           />
         </div>
         <div className="order-1 col-span-full py-2 lg:order-2 lg:col-span-2 lg:px-4">
-          <MapControls
+          <Controls
             operators={transitOperators}
             selectedOperator={selectedOperator}
             onOperatorChange={handleOperatorChange}

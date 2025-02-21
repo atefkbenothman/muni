@@ -1,7 +1,7 @@
 "use server"
 import { getTransitLines, getTransitOperators, getTransitStops } from "@/actions/muni-actions"
 
-import { Content } from "@/components/content"
+import { Dashboard } from "@/components/dashboard"
 
 export default async function Home() {
   const transitLines = await getTransitLines()
@@ -15,7 +15,7 @@ export default async function Home() {
           San Francisco Muni Map
         </h1>
       </div>
-      <Content
+      <Dashboard
         transitLines={transitLines}
         transitStops={transitStops}
         transitOperators={transitOperators}

@@ -1,7 +1,7 @@
 import { memo } from "react"
 import type { TransitLine, TransitOperator } from "@/types/transit-types"
 
-type MapControlProps = {
+type ControlsProp = {
   operators: TransitOperator[]
   selectedOperator: string
   onOperatorChange: (e: React.ChangeEvent<HTMLSelectElement>) => void
@@ -19,7 +19,7 @@ type MapControlProps = {
   onToggleCableway: () => void
 }
 
-export const MapControls = memo(
+export const Controls = memo(
   ({
     operators,
     selectedOperator,
@@ -36,7 +36,7 @@ export const MapControls = memo(
     onToggleBuses,
     onToggleMetro,
     onToggleCableway,
-  }: MapControlProps) => {
+  }: ControlsProp) => {
     return (
       <div className="flex flex-col space-y-4">
         <div className="flex flex-col space-y-2">
