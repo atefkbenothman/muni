@@ -4,9 +4,10 @@ import { useState, useCallback, useMemo } from "react"
 
 import "mapbox-gl/dist/mapbox-gl.css"
 
-import type { VehicleActivity } from "@/types/transit-types"
-import type { Tables } from "@/types/database.types"
+import type { TransitLine, TransitStop, TransitOperator } from "@/types/transit-types"
 import type { PopupInfo } from "@/components/muni-map"
+
+import { filterVehiclesByLine, filterVehiclesByMode, parseStopRefs } from "@/utils/transit"
 
 import { MapControls } from "@/components/map-controls"
 import { MuniMap } from "@/components/muni-map"
@@ -16,51 +17,18 @@ import { useRealtimeVehicles } from "@/hooks/use-vehicles"
 import { useTransitData } from "@/hooks/use-transit"
 import { getPatternsByLine } from "@/actions/muni-actions"
 
+/* Globals */
 const REFRESH_INTERVAL = 600
 const DEFAULT_AGENCY = "SF"
 
-const filterVehiclesByLine = (
-  vehicles: VehicleActivity[],
-  selectedLine: string,
-  transitLines: Tables<"lines">[],
-): VehicleActivity[] => {
-  if (!selectedLine || selectedLine === "All") return vehicles
-  // Find the matching transit line
-  const matchingLine = transitLines.find(
-    (line) => line.Id === selectedLine || line.SiriLineRef === selectedLine,
-  )
-  return vehicles.filter((vehicle) => {
-    const lineRef = vehicle.MonitoredVehicleJourney.LineRef
-    // Check against both the SiriLineRef and the direct LineRef
-    return lineRef === matchingLine?.SiriLineRef || lineRef === selectedLine
-  })
-}
-
-const parseStopRefs = (pointsInSequence: string | null): string[] => {
-  if (!pointsInSequence) return []
-  const cleanedPoints = pointsInSequence.replace(
-    /(^|[{,\s])'([^']*)'/g,
-    '$1"$2"',
-  )
-  try {
-    const parsed = JSON.parse(cleanedPoints)
-    return parsed.StopPointInJourneyPattern.map(
-      (stop: any) => stop.ScheduledStopPointRef,
-    )
-  } catch (err) {
-    console.log(cleanedPoints)
-    console.error("Error parsing stop refs:", err)
-    return []
-  }
-}
 
 type ContentProps = {
-  lines: Tables<"lines">[]
-  stops: Tables<"stops">[]
-  operators: Tables<"operators">[]
+  transitLines: TransitLine[]
+  transitStops: TransitStop[]
+  transitOperators: TransitOperator[]
 }
 
-export function Content({ lines, stops, operators }: ContentProps) {
+export function Content({ transitLines, transitStops, transitOperators }: ContentProps) {
   const { vehicles } = useRealtimeVehicles(REFRESH_INTERVAL)
 
   const {
@@ -79,34 +47,12 @@ export function Content({ lines, stops, operators }: ContentProps) {
   const [showStops, setShowStops] = useState(true)
   const [popupInfo, setPopupInfo] = useState<PopupInfo | null>(null)
 
-  const [routeStops, setRouteStops] = useState<Tables<"stops">[]>([])
+  const [routeStops, setRouteStops] = useState<TransitStop[]>([])
 
   const filteredVehicles = useMemo(() => {
-    let filtered = filterVehiclesByLine(vehicles, selectedLine, lines)
-
-    // Filter by transport mode
-    filtered = filtered.filter((vehicle) => {
-      const lineRef = vehicle.MonitoredVehicleJourney.LineRef
-      const line = lines.find(
-        (l) => l.Id === lineRef || l.SiriLineRef === lineRef,
-      )
-
-      if (!line) return false
-
-      switch (line.TransportMode?.toLowerCase()) {
-        case "bus":
-          return showBuses
-        case "metro":
-          return showMetro
-        case "cableway":
-          return showCableway
-        default:
-          return true
-      }
-    })
-
-    return filtered
-  }, [vehicles, selectedLine, lines, showBuses, showMetro, showCableway])
+    let filtered = filterVehiclesByLine(vehicles, selectedLine, transitLines)
+    return filterVehiclesByMode(filtered, transitLines, { showBuses, showMetro, showCableway })
+  }, [vehicles, selectedLine, transitLines, showBuses, showMetro, showCableway])
 
   const handleOperatorChange = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -122,7 +68,7 @@ export function Content({ lines, stops, operators }: ContentProps) {
       const allStopRefs = patterns.flatMap((pattern) =>
         parseStopRefs(pattern.PointsInSequence as string),
       )
-      const matchedStops = stops.filter((stop) =>
+      const matchedStops = transitStops.filter((stop) =>
         allStopRefs.includes(stop.id.toString()),
       )
       setRouteStops(matchedStops)
@@ -137,7 +83,7 @@ export function Content({ lines, stops, operators }: ContentProps) {
     const allStopRefs = patterns.flatMap((pattern) =>
       parseStopRefs(pattern.PointsInSequence as string),
     )
-    const matchedStops = stops.filter((stop) =>
+    const matchedStops = transitStops.filter((stop) =>
       allStopRefs.includes(stop.id.toString()),
     )
     setRouteStops(matchedStops)
@@ -163,15 +109,15 @@ export function Content({ lines, stops, operators }: ContentProps) {
             popupInfo={popupInfo}
             setPopupInfo={setPopupInfo}
             handleMarkerClick={handleMarkerClick}
-            lines={lines}
+            lines={transitLines}
           />
         </div>
         <div className="order-1 col-span-full py-2 lg:order-2 lg:col-span-2 lg:px-4">
           <MapControls
-            operators={operators}
+            operators={transitOperators}
             selectedOperator={selectedOperator}
             onOperatorChange={handleOperatorChange}
-            lines={lines}
+            lines={transitLines}
             selectedLine={selectedLine}
             onLineChange={handleLineChange}
             showStops={showStops}

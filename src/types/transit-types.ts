@@ -1,3 +1,9 @@
+import type { Tables } from "@/types/database.types"
+
+export type TransitLine = Tables<"lines">
+export type TransitStop = Tables<"stops">
+export type TransitOperator = Tables<"operators">
+
 export type VehicleActivity = {
   RecordedAtTime: string
   ValidUntilTime: string

@@ -23,6 +23,51 @@ export async function getVehicleMonitoring() {
   ] as VehicleActivity[]
 }
 
+export async function getTransitLines() {
+  const client = await createClient()
+
+  const { data: data, error: error } = await client
+    .from("lines")
+    .select("*")
+
+  if (error) {
+    console.error("Error fetching lines:", error)
+    return []
+  }
+
+  return data
+}
+
+export async function getTransitStops() {
+  const client = await createClient()
+
+  const { data: data, error: error } = await client
+    .from("stops")
+    .select("*")
+
+  if (error) {
+    console.error("Error fetching stops:", error)
+    return []
+  }
+
+  return data
+}
+
+export async function getTransitOperators() {
+  const client = await createClient()
+
+  const { data: data, error: error } = await client
+    .from("operators")
+    .select("*")
+
+  if (error) {
+    console.error("Error fetching operators:", error)
+    return []
+  }
+
+  return data
+}
+
 export async function getPatternsByLine(lineRef: string) {
   const client = await createClient()
 
