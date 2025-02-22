@@ -1,5 +1,23 @@
-import { memo } from "react"
+import { memo, useState } from "react"
 import type { TransitLine, TransitOperator } from "@/types/transit-types"
+import { Switch } from "@/components/ui/switch"
+import { Label } from "@/components/ui/label"
+import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import { Check, ChevronsUpDown } from "lucide-react"
 
 type ControlsProp = {
   operators: TransitOperator[]
@@ -37,111 +55,103 @@ export const Controls = memo(
     onToggleMetro,
     onToggleCableway,
   }: ControlsProp) => {
+    const [open, setOpen] = useState(false)
+
+    console.log(selectedLine)
+
     return (
-      <div className="flex flex-col space-y-4">
-        <div className="flex flex-col space-y-2">
-          <label className="text-sm">Operators</label>
-          <select
-            value={selectedOperator}
-            onChange={onOperatorChange}
-            className="w-full rounded-sm border p-1"
-          >
-            {operators.map((operator) => (
-              <option key={operator.Id} value={operator.Id}>
-                {operator.Name}
-              </option>
-            ))}
-          </select>
+      <div className="flex h-full flex-col justify-center space-y-12 px-12">
+        <div className="flex items-center">
+          <Label htmlFor="showStops">Lines</Label>
+          <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild className="ml-auto">
+              <Button
+                variant="outline"
+                role="combobox"
+                aria-expanded={open}
+                className="w-[8rem] justify-between"
+              >
+                {transitLines.find((line) => line.Id === selectedLine)?.Id ||
+                  "All"}
+                <ChevronsUpDown className="opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-[200px] p-0">
+              <Command>
+                <CommandInput
+                  placeholder="Search line..."
+                  className="h-9"
+                  onFocus={() => setOpen(true)}
+                  onBlur={() => setOpen(false)}
+                />
+                <CommandList>
+                  <CommandEmpty>No line found.</CommandEmpty>
+                  <CommandGroup>
+                    {transitLines.map((line) => (
+                      <CommandItem
+                        key={line.Id}
+                        value={line.Id}
+                        onSelect={(currentValue) => {
+                          onLineChange({
+                            target: { value: currentValue },
+                          } as React.ChangeEvent<HTMLSelectElement>)
+                          setOpen(false)
+                        }}
+                      >
+                        {line.Name} ({line.PublicCode})
+                        <Check
+                          className={cn(
+                            "ml-auto",
+                            selectedLine === line.Id
+                              ? "opacity-100"
+                              : "opacity-0",
+                          )}
+                        />
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
         </div>
-
-        <div className="flex flex-col space-y-2">
-          <label className="text-sm">Lines</label>
-          <select
-            value={selectedLine}
-            onChange={onLineChange}
-            className="w-full rounded-sm border p-1"
-          >
-            <option>All</option>
-            {transitLines.map((line) => (
-              <option key={line.Id} value={line.Id}>
-                {line.Name} ({line.PublicCode})
-              </option>
-            ))}
-          </select>
-        </div>
-        {/* Toggle Controls Section */}
-        <div className="flex flex-col space-y-3 pt-2">
-          <h3 className="text-sm font-medium">Display Options</h3>
-
-          {/* Stops Toggle */}
-          <div className="flex items-center justify-between">
-            <label className="text-sm">Show Stops</label>
-            <button
-              onClick={onToggleStops}
-              className={`rounded-sm px-3 py-1 ${
-                showStops
-                  ? "bg-blue-500 text-white"
-                  : "bg-gray-300 text-gray-700"
-              }`}
-            >
-              {showStops ? "On" : "Off"}
-            </button>
+        <div className="space-y-4">
+          <div className="flex items-center space-x-2">
+            <Label htmlFor="showStops">Stops 📍</Label>
+            <Switch
+              id="showStops"
+              className="ml-auto"
+              checked={showStops}
+              onCheckedChange={onToggleStops}
+            />
           </div>
-
-          {/* Bus Toggle */}
-          <div className="flex items-center justify-between">
-            <label className="text-sm">Show Buses 🚎</label>
-            <button
-              onClick={onToggleBuses}
-              className={`rounded-sm px-3 py-1 ${
-                showBuses
-                  ? "bg-blue-500 text-white"
-                  : "bg-gray-300 text-gray-700"
-              }`}
-            >
-              {showBuses ? "On" : "Off"}
-            </button>
+          <div className="flex items-center space-x-2">
+            <Label htmlFor="showBuses">Buses 🚌</Label>
+            <Switch
+              id="showBuses"
+              className="ml-auto"
+              checked={showBuses}
+              onCheckedChange={onToggleBuses}
+            />
           </div>
-
-          {/* Metro Toggle */}
-          <div className="flex items-center justify-between">
-            <label className="text-sm">Show Metro 🚃</label>
-            <button
-              onClick={onToggleMetro}
-              className={`rounded-sm px-3 py-1 ${
-                showMetro
-                  ? "bg-blue-500 text-white"
-                  : "bg-gray-300 text-gray-700"
-              }`}
-            >
-              {showMetro ? "On" : "Off"}
-            </button>
+          <div className="flex items-center space-x-2">
+            <Label htmlFor="showMetro">Trains 🚃</Label>
+            <Switch
+              id="showMetro"
+              className="ml-auto"
+              checked={showMetro}
+              onCheckedChange={onToggleMetro}
+            />
           </div>
-
-          {/* Cableway Toggle */}
-          <div className="flex items-center justify-between">
-            <label className="text-sm">Show Cableway 🚋</label>
-            <button
-              onClick={onToggleCableway}
-              className={`rounded-sm px-3 py-1 ${
-                showCableway
-                  ? "bg-blue-500 text-white"
-                  : "bg-gray-300 text-gray-700"
-              }`}
-            >
-              {showCableway ? "On" : "Off"}
-            </button>
+          <div className="flex items-center space-x-2">
+            <Label htmlFor="showCableway">Cableway 🚋</Label>
+            <Switch
+              id="showCableway"
+              className="ml-auto"
+              checked={showCableway}
+              onCheckedChange={onToggleCableway}
+            />
           </div>
-        </div>
-
-        <div>
-          <button
-            onClick={onResetFilter}
-            className="rounded-sm bg-gray-300 px-3 py-1 text-black"
-            title="Reset line filter"
-          >
-            Reset Filter
-          </button>
         </div>
       </div>
     )

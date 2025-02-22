@@ -15,12 +15,11 @@ import { filterVehiclesByLine, filterVehiclesByMode } from "@/utils/transit"
 
 import { Controls } from "@/components/controls"
 import { Map } from "@/components/map"
-import { Countdown } from "@/components/countdown"
 import { VehicleCard } from "@/components/vehicle-card"
 
 import { useRealtimeVehicles } from "@/hooks/use-vehicles"
 import { useStops } from "@/hooks/use-stops"
-import { useFilters, type TransitModes } from "@/hooks/use-filters"
+import { useFilters } from "@/hooks/use-filters"
 
 /* Globals */
 const REFRESH_INTERVAL = 600
@@ -127,35 +126,40 @@ export function Dashboard({
   }
 
   return (
-    <div className="absolute inset-0">
-      <Map
-        filteredVehicles={filteredVehicles}
-        showStops={showStops}
-        stops={routeStops}
-        handleMarkerClick={handleMarkerClick}
-        lines={transitLines}
-      />
-      {vehicleInfo && (
-        <VehicleCard data={vehicleInfo} onClose={closeInfoCard} />
-      )}
+    <div className="grid w-full grid-cols-10">
+      <div className="col-span-7 h-[44rem] overflow-hidden">
+        <Map
+          filteredVehicles={filteredVehicles}
+          showStops={showStops}
+          stops={routeStops}
+          handleMarkerClick={handleMarkerClick}
+          lines={transitLines}
+        />
+        {vehicleInfo && (
+          <VehicleCard data={vehicleInfo} onClose={closeInfoCard} />
+        )}{" "}
+      </div>
+      <div className="col-span-3">
+        <div className="h-full space-y-4">
+          <Controls
+            operators={transitOperators}
+            selectedOperator={selectedOperator}
+            onOperatorChange={handleOperatorChange}
+            transitLines={transitLines}
+            selectedLine={selectedLine}
+            onLineChange={handleLineChange}
+            showStops={showStops}
+            onToggleStops={toggleStopMarkers}
+            onResetFilter={handleResetFilter}
+            showBuses={showBuses}
+            showMetro={showMetro}
+            showCableway={showCableway}
+            onToggleBuses={handleToggleBuses}
+            onToggleMetro={handleToggleMetro}
+            onToggleCableway={handleToggleCableway}
+          />
+        </div>
+      </div>
     </div>
   )
 }
-
-//       <Controls
-//         operators={transitOperators}
-//         selectedOperator={selectedOperator}
-//         onOperatorChange={handleOperatorChange}
-//         transitLines={transitLines}
-//         selectedLine={selectedLine}
-//         onLineChange={handleLineChange}
-//         showStops={showStops}
-//         onToggleStops={toggleStopMarkers}
-//         onResetFilter={handleResetFilter}
-//         showBuses={showBuses}
-//         showMetro={showMetro}
-//         showCableway={showCableway}
-//         onToggleBuses={handleToggleBuses}
-//         onToggleMetro={handleToggleMetro}
-//         onToggleCableway={handleToggleCableway}
-//       />

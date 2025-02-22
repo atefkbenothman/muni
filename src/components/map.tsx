@@ -59,7 +59,12 @@ export const Map = memo(
         }}
         minZoom={8}
         mapStyle="mapbox://styles/mapbox/streets-v12?optimize=true"
-        style={{ width: "100%", height: "100%", borderRadius: "4px" }}
+        style={{
+          width: "100%",
+          height: "100%",
+          borderRadius: "4px",
+          border: "2px solid lightgray",
+        }}
         maxBounds={bounds}
       >
         {filteredVehicles.map((vehicle, idx) => {
