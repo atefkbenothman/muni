@@ -2,6 +2,10 @@
 
 An interactive web application that displays real-time San Francisco Muni transit information using Next.js 15, Mapbox GL, and Supabase.
 
+<br />
+
+<img width="929" alt="Screenshot 2025-02-21 at 10 16 45 PM" src="https://github.com/user-attachments/assets/76969773-61bd-4fbe-938b-6ef160fec22c" />
+
 ## Features
 
 - Real-time tracking of SF Muni vehicles 🚌
