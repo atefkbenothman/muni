@@ -127,7 +127,7 @@ export function Dashboard({
 
   return (
     <div className="grid w-full grid-cols-10">
-      <div className="col-span-7 h-[44rem] overflow-hidden">
+      <div className="relative col-span-7 h-[44rem] overflow-hidden">
         <Map
           filteredVehicles={filteredVehicles}
           showStops={showStops}

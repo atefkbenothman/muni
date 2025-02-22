@@ -23,7 +23,7 @@ export function VehicleCard({ data, onClose }: InfoCardProps) {
           variant={data.line?.Monitored ? "default" : "secondary"}
           className="rounded-sm"
         >
-          {data.line?.Monitored ? "Monitored" : "Unmonitored"}
+          {data.line?.Id}
         </Badge>
         <X className="h-4 w-4 cursor-pointer" onClick={onClose} />
       </CardHeader>
