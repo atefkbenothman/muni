@@ -1,7 +1,9 @@
 import type { VehicleActivity } from "@/types/transit-types"
 
 const InfoItem = ({ label, value }: { label: string; value: string }) => (
-  <p><span className="font-semibold">{label}:</span> {value}</p>
+  <p>
+    <span className="font-semibold">{label}:</span> {value}
+  </p>
 )
 
 export function VehiclePopup({ vehicle }: { vehicle: VehicleActivity }) {

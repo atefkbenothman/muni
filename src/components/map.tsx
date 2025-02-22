@@ -2,13 +2,14 @@
 
 import { memo } from "react"
 
-import { Map as ReactMap} from "react-map-gl/mapbox"
+import { Map as ReactMap } from "react-map-gl/mapbox"
 import { Marker, Popup } from "react-map-gl/mapbox"
 
-import type { VehicleActivity, TransitStop, TransitLine } from "@/types/transit-types"
-
-import { StopPopup } from "@/components/stop-popup"
-import { VehiclePopup } from "@/components/vehicle-popup"
+import type {
+  VehicleActivity,
+  TransitStop,
+  TransitLine,
+} from "@/types/transit-types"
 
 const MAPBOX_ACCESS_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || ""
 
@@ -20,7 +21,7 @@ const bounds: [number, number, number, number] = [
 ]
 
 const icons = {
-  bus: "🚎",
+  bus: "🚌",
   metro: "🚃",
   cableway: "🚋",
 }
@@ -37,9 +38,7 @@ type MapProps = {
   showStops: boolean
   lines: TransitLine[]
   stops: TransitStop[]
-  popupInfo: PopupInfo | null
-  setPopupInfo: (info: PopupInfo | null) => void
-  handleMarkerClick: (lineRef: string) => void
+  handleMarkerClick: (vehicle: VehicleActivity) => void
 }
 
 export const Map = memo(
@@ -47,8 +46,6 @@ export const Map = memo(
     filteredVehicles,
     showStops,
     stops,
-    popupInfo,
-    setPopupInfo,
     handleMarkerClick,
     lines,
   }: MapProps) => {
@@ -62,7 +59,7 @@ export const Map = memo(
         }}
         minZoom={8}
         mapStyle="mapbox://styles/mapbox/streets-v12?optimize=true"
-        style={{ width: "100%", height: "100%" }}
+        style={{ width: "100%", height: "100%", borderRadius: "4px" }}
         maxBounds={bounds}
       >
         {filteredVehicles.map((vehicle, idx) => {
@@ -89,19 +86,7 @@ export const Map = memo(
               )}
               onClick={(e) => {
                 e.originalEvent.stopPropagation()
-                setPopupInfo({
-                  type: "vehicle",
-                  data: vehicle,
-                  latitude: Number(
-                    vehicle.MonitoredVehicleJourney.VehicleLocation.Latitude,
-                  ),
-                  longitude: Number(
-                    vehicle.MonitoredVehicleJourney.VehicleLocation.Longitude,
-                  ),
-                })
-                if (lineRef) {
-                  handleMarkerClick(lineRef)
-                }
+                handleMarkerClick(vehicle)
               }}
               style={{ zIndex: 2 }}
             >
@@ -115,36 +100,11 @@ export const Map = memo(
               key={stop.id}
               longitude={Number(stop["Location/Longitude"])}
               latitude={Number(stop["Location/Latitude"])}
-              onClick={(e) => {
-                e.originalEvent.stopPropagation()
-                setPopupInfo({
-                  type: "stop",
-                  data: stop,
-                  latitude: Number(stop["Location/Latitude"]),
-                  longitude: Number(stop["Location/Longitude"]),
-                })
-              }}
               style={{ zIndex: 1 }}
             >
               <div className="cursor-pointer text-xl">📍</div>
             </Marker>
           ))}
-        {popupInfo && (
-          <Popup
-            longitude={popupInfo.longitude}
-            latitude={popupInfo.latitude}
-            onClose={() => setPopupInfo(null)}
-            closeButton
-            closeOnClick={false}
-            style={{ zIndex: 10 }}
-          >
-            {popupInfo.type === "vehicle" ? (
-              <VehiclePopup vehicle={popupInfo.data as VehicleActivity} />
-            ) : (
-              <StopPopup stop={popupInfo.data as TransitStop} />
-            )}
-          </Popup>
-        )}
       </ReactMap>
     )
   },
