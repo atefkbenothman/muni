@@ -2,7 +2,7 @@
 
 import { memo, useMemo } from "react"
 import { Map as ReactMap } from "react-map-gl/mapbox"
-import { Marker, Popup } from "react-map-gl/mapbox"
+import { Marker } from "react-map-gl/mapbox"
 
 import type {
   VehicleActivity,
