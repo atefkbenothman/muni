@@ -35,7 +35,8 @@ export function Dashboard({
   transitStops,
   transitOperators,
 }: ContentProps) {
-  const { vehicles } = useRealtimeVehicles(REFRESH_INTERVAL)
+  const { vehicles } = useRealtimeVehicles()
+
   const {
     filters,
     selectOperator,
