@@ -9,6 +9,7 @@ import type {
   TransitStop,
   TransitOperator,
   VehicleActivity,
+  Directions,
 } from "@/types/transit-types"
 
 import { filterVehiclesByLine, filterVehiclesByMode } from "@/utils/transit"
@@ -41,6 +42,7 @@ export function Dashboard({
     filters,
     selectOperator,
     selectLine,
+    selectDirection,
     toggleTransitMode,
     toggleStops,
     resetFilters,
@@ -50,6 +52,7 @@ export function Dashboard({
 
   const selectedLine = filters.selectedLine
   const selectedOperator = filters.selectedOperator
+  const selectedDirection = filters.selectedDirection
 
   const showStops = filters.showStops
   const showBuses = filters.visibleModes.buses
@@ -58,12 +61,20 @@ export function Dashboard({
 
   const filteredVehicles = useMemo(() => {
     let filtered = filterVehiclesByLine(vehicles, selectedLine, transitLines)
-    return filterVehiclesByMode(filtered, transitLines, {
+    return filterVehiclesByMode(filtered, transitLines, selectedDirection, {
       showBuses,
       showMetro,
       showCableway,
     })
-  }, [vehicles, selectedLine, transitLines, showBuses, showMetro, showCableway])
+  }, [
+    vehicles,
+    selectedLine,
+    selectedDirection,
+    transitLines,
+    showBuses,
+    showMetro,
+    showCableway,
+  ])
 
   const handleOperatorChange = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -110,6 +121,10 @@ export function Dashboard({
     clearRouteStops()
   }, [])
 
+  const handleDirection = useCallback((direction: Directions) => {
+    selectDirection(direction)
+  }, [])
+
   const toggleStopMarkers = useCallback(() => {
     toggleStops(!showStops)
   }, [showStops])
@@ -128,7 +143,7 @@ export function Dashboard({
 
   return (
     <div className="grid w-full grid-cols-10">
-      <div className="relative col-span-7 h-[44rem] overflow-hidden">
+      <div className="relative col-span-7 h-[40rem] overflow-hidden">
         <Map
           filteredVehicles={filteredVehicles}
           showStops={showStops}
@@ -146,6 +161,8 @@ export function Dashboard({
             operators={transitOperators}
             selectedOperator={selectedOperator}
             onOperatorChange={handleOperatorChange}
+            selectedDirection={selectedDirection}
+            onDirectionChange={handleDirection}
             transitLines={transitLines}
             selectedLine={selectedLine}
             onLineChange={handleLineChange}

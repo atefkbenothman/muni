@@ -1,3 +1,4 @@
+import { Directions } from "@/types/transit-types"
 import { useCallback, useState } from "react"
 
 export type TransitModes = {
@@ -9,6 +10,7 @@ export type TransitModes = {
 type Filters = {
   selectedOperator: string
   selectedLine: string
+  selectedDirection: Directions
   visibleModes: TransitModes
   showStops: boolean
 }
@@ -16,6 +18,7 @@ type Filters = {
 const DEFAULT_FILTERS: Filters = {
   selectedOperator: "SF",
   selectedLine: "All",
+  selectedDirection: "BOTH",
   visibleModes: {
     buses: true,
     metro: true,
@@ -38,6 +41,13 @@ export const useFilters = () => {
     setFilters(prev => ({
       ...prev,
       selectedOperator: operatorId
+    }))
+  }, [])
+
+  const selectDirection = useCallback((direction: Directions) => {
+    setFilters(prev => ({
+      ...prev,
+      selectedDirection: direction
     }))
   }, [])
 
@@ -66,6 +76,7 @@ export const useFilters = () => {
     filters,
     selectOperator,
     selectLine,
+    selectDirection,
     toggleTransitMode,
     toggleStops,
     resetFilters

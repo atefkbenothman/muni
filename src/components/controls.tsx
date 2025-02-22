@@ -1,5 +1,9 @@
 import { memo, useState } from "react"
-import type { TransitLine, TransitOperator } from "@/types/transit-types"
+import type {
+  Directions,
+  TransitLine,
+  TransitOperator,
+} from "@/types/transit-types"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
@@ -23,6 +27,8 @@ type ControlsProp = {
   operators: TransitOperator[]
   selectedOperator: string
   onOperatorChange: (e: React.ChangeEvent<HTMLSelectElement>) => void
+  selectedDirection: Directions
+  onDirectionChange: (d: Directions) => void
   transitLines: TransitLine[]
   selectedLine: string
   onLineChange: (e: React.ChangeEvent<HTMLSelectElement>) => void
@@ -42,8 +48,10 @@ export const Controls = memo(
     operators,
     selectedOperator,
     onOperatorChange,
+    onDirectionChange,
     transitLines,
     selectedLine,
+    selectedDirection,
     onLineChange,
     showStops,
     onToggleStops,
@@ -55,65 +63,122 @@ export const Controls = memo(
     onToggleMetro,
     onToggleCableway,
   }: ControlsProp) => {
-    const [open, setOpen] = useState(false)
+    const [linesOpen, setLinesOpen] = useState(false)
+    const [directionsOpen, setDirectionsOpen] = useState(false)
 
     console.log(selectedLine)
 
     return (
       <div className="flex h-full flex-col justify-center space-y-12 px-12">
-        <div className="flex items-center">
-          <Label htmlFor="showStops">Lines</Label>
-          <Popover open={open} onOpenChange={setOpen}>
-            <PopoverTrigger asChild className="ml-auto">
-              <Button
-                variant="outline"
-                role="combobox"
-                aria-expanded={open}
-                className="w-[8rem] justify-between"
-              >
-                {transitLines.find((line) => line.Id === selectedLine)?.Id ||
-                  "All"}
-                <ChevronsUpDown className="opacity-50" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-[200px] p-0">
-              <Command>
-                <CommandInput
-                  placeholder="Search line..."
-                  className="h-9"
-                  onFocus={() => setOpen(true)}
-                  onBlur={() => setOpen(false)}
-                />
-                <CommandList>
-                  <CommandEmpty>No line found.</CommandEmpty>
-                  <CommandGroup>
-                    {transitLines.map((line) => (
+        <div className="flex flex-col space-y-4">
+          <div className="flex items-center">
+            <Label htmlFor="showStops">Lines</Label>
+            <Popover open={linesOpen} onOpenChange={setLinesOpen}>
+              <PopoverTrigger asChild className="ml-auto">
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={linesOpen}
+                  className="w-[6rem] justify-between"
+                >
+                  {transitLines.find((line) => line.Id === selectedLine)?.Id ||
+                    "All"}
+                  <ChevronsUpDown className="opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="p-0">
+                <Command>
+                  <CommandInput
+                    placeholder="Search line..."
+                    className="h-9"
+                    onFocus={() => setLinesOpen(true)}
+                    onBlur={() => setLinesOpen(false)}
+                  />
+                  <CommandList>
+                    <CommandEmpty>No line found.</CommandEmpty>
+                    <CommandGroup>
+                      {transitLines.map((line) => (
+                        <CommandItem
+                          key={line.Id}
+                          value={line.Id}
+                          onSelect={(currentValue) => {
+                            onLineChange({
+                              target: { value: currentValue },
+                            } as React.ChangeEvent<HTMLSelectElement>)
+                            setLinesOpen(false)
+                          }}
+                        >
+                          ({line.PublicCode}) {line.Name}
+                          <Check
+                            className={cn(
+                              "ml-auto",
+                              selectedLine === line.Id
+                                ? "opacity-100"
+                                : "opacity-0",
+                            )}
+                          />
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
+          </div>
+          <div className="flex items-center">
+            <Label htmlFor="direction">Direction</Label>
+            <Popover open={directionsOpen} onOpenChange={setDirectionsOpen}>
+              <PopoverTrigger asChild className="ml-auto">
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={linesOpen}
+                  className="w-[6rem] justify-between"
+                >
+                  {selectedDirection}
+                  <ChevronsUpDown className="opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-[8rem] p-0">
+                <Command>
+                  <CommandList>
+                    <CommandGroup>
                       <CommandItem
-                        key={line.Id}
-                        value={line.Id}
-                        onSelect={(currentValue) => {
-                          onLineChange({
-                            target: { value: currentValue },
-                          } as React.ChangeEvent<HTMLSelectElement>)
-                          setOpen(false)
-                        }}
+                        key="both"
+                        onSelect={() => onDirectionChange("BOTH")}
                       >
-                        {line.Name} ({line.PublicCode})
-                        <Check
-                          className={cn(
-                            "ml-auto",
-                            selectedLine === line.Id
-                              ? "opacity-100"
-                              : "opacity-0",
-                          )}
-                        />
+                        Both
                       </CommandItem>
-                    ))}
-                  </CommandGroup>
-                </CommandList>
-              </Command>
-            </PopoverContent>
-          </Popover>
+                      <CommandItem
+                        key="inbound"
+                        onSelect={() => onDirectionChange("IB")}
+                      >
+                        Inbound
+                      </CommandItem>
+                      <CommandItem
+                        key="outbound"
+                        onSelect={() => onDirectionChange("OB")}
+                      >
+                        Outbound
+                      </CommandItem>
+                      <CommandItem
+                        key="North"
+                        onSelect={() => onDirectionChange("N")}
+                      >
+                        North
+                      </CommandItem>
+                      <CommandItem
+                        key="South"
+                        onSelect={() => onDirectionChange("S")}
+                      >
+                        South
+                      </CommandItem>
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
+          </div>
         </div>
         <div className="space-y-4">
           <div className="flex items-center space-x-2">

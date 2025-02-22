@@ -1,4 +1,4 @@
-import type { VehicleActivity } from "@/types/transit-types"
+import type { Directions, VehicleActivity } from "@/types/transit-types"
 import type { TransitLine } from "@/types/transit-types"
 
 export const filterVehiclesByLine = (vehicles: VehicleActivity[], selectedLine: string, transitLines: TransitLine[]): VehicleActivity[] => {
@@ -12,11 +12,23 @@ export const filterVehiclesByLine = (vehicles: VehicleActivity[], selectedLine: 
   })
 }
 
-export const filterVehiclesByMode = (vehicles: VehicleActivity[], lines: TransitLine[], modes: { showBuses: boolean, showMetro: boolean, showCableway: boolean }): VehicleActivity[] => {
+type FilterVehiclesByModeProps = {
+  vehicles: VehicleActivity[]
+  lines: TransitLine[]
+  direction: Directions
+  modes: {
+    showBuses: boolean
+    showMetro: boolean
+    showCableway: boolean
+  }
+}
+
+export const filterVehiclesByMode = (vehicles: VehicleActivity[], lines: TransitLine[], direction: Directions, modes: { showBuses: boolean; showMetro: boolean; showCableway: boolean; }): VehicleActivity[] => {
   return vehicles.filter((vehicle) => {
     const lineRef = vehicle.MonitoredVehicleJourney.LineRef
     const line = lines.find((line) => line.Id === lineRef || line.SiriLineRef === lineRef)
-    if (!line) return
+    if (!line) return false
+    if (direction && vehicle.MonitoredVehicleJourney.DirectionRef !== direction && direction !== "BOTH") return false
     switch (line.TransportMode?.toLowerCase()) {
       case "bus":
         return modes.showBuses

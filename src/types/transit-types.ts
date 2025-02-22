@@ -31,3 +31,5 @@ export type VehicleActivity = {
     VehicleRef: string
   }
 }
+
+export type Directions = "BOTH" | "IB" | "OB" | "N" | "S"
