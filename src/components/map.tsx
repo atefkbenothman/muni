@@ -4,6 +4,13 @@ import { memo, useMemo } from "react"
 import { Map as ReactMap } from "react-map-gl/mapbox"
 import { Marker } from "react-map-gl/mapbox"
 
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
+
 import type {
   VehicleActivity,
   TransitStop,
@@ -79,7 +86,19 @@ const VehicleMarkers = memo(
               }}
               style={{ zIndex: 2 }}
             >
-              <div className="cursor-pointer text-xl">{vehicleEmoji}</div>
+              <TooltipProvider>
+                <Tooltip delayDuration={0}>
+                  <TooltipTrigger asChild>
+                    <div className="cursor-pointer text-xl">{vehicleEmoji}</div>
+                  </TooltipTrigger>
+                  <TooltipContent
+                    className="bg-black text-sm font-bold text-white"
+                    side="top"
+                  >
+                    <p>{lineRef}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </Marker>
           )
         })}
