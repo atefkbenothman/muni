@@ -192,7 +192,6 @@ export function Dashboard({
                 onLineChange={handleLineChange}
                 showStops={showStops}
                 onToggleStops={toggleStopMarkers}
-                onResetFilter={handleResetFilter}
                 showBuses={showBuses}
                 showMetro={showMetro}
                 showCableway={showCableway}
@@ -200,6 +199,13 @@ export function Dashboard({
                 onToggleMetro={handleToggleMetro}
                 onToggleCableway={handleToggleCableway}
               />
+              <Button
+                variant="outline"
+                className="w-full rounded-xs hover:cursor-pointer"
+                onClick={handleResetFilter}
+              >
+                Reset
+              </Button>
               <DrawerClose>
                 <Button
                   variant="default"

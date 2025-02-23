@@ -34,7 +34,6 @@ type ControlsProp = {
   onLineChange: (e: React.ChangeEvent<HTMLSelectElement>) => void
   showStops: boolean
   onToggleStops: () => void
-  onResetFilter: () => void
   showBuses: boolean
   showMetro: boolean
   showCableway: boolean
@@ -55,7 +54,6 @@ export const Controls = memo(
     onLineChange,
     showStops,
     onToggleStops,
-    onResetFilter,
     showBuses,
     showMetro,
     showCableway,
