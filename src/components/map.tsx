@@ -49,6 +49,7 @@ type MapProps = {
   lines: TransitLine[]
   stops: TransitStop[]
   handleMarkerClick: (vehicle: VehicleActivity) => void
+  handleStopClick: (stop: TransitStop) => void
 }
 
 const VehicleMarkers = memo(
@@ -111,22 +112,46 @@ const VehicleMarkers = memo(
   },
 )
 
-const StopMarkers = memo(({ stops }: { stops: TransitStop[] }) => {
-  return (
-    <>
-      {stops.map((stop) => (
-        <Marker
-          key={stop.id}
-          longitude={Number(stop["Location/Longitude"])}
-          latitude={Number(stop["Location/Latitude"])}
-          style={{ zIndex: 1 }}
-        >
-          <div className="cursor-pointer text-xl">📍</div>
-        </Marker>
-      ))}
-    </>
-  )
-})
+const StopMarkers = memo(
+  ({
+    stops,
+    onStopClick,
+  }: {
+    stops: TransitStop[]
+    onStopClick: (stop: TransitStop) => void
+  }) => {
+    return (
+      <>
+        {stops.map((stop) => (
+          <Marker
+            key={stop.id}
+            longitude={Number(stop["Location/Longitude"])}
+            latitude={Number(stop["Location/Latitude"])}
+            onClick={(e) => {
+              e.originalEvent.stopPropagation()
+              onStopClick(stop)
+            }}
+            style={{ zIndex: 1 }}
+          >
+            <TooltipProvider>
+              <Tooltip delayDuration={0}>
+                <TooltipTrigger asChild>
+                  <div className="cursor-pointer text-xl">📍</div>
+                </TooltipTrigger>
+                <TooltipContent
+                  className="bg-black text-xs font-bold text-white"
+                  side="top"
+                >
+                  <p>{stop.Name || stop.id}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </Marker>
+        ))}
+      </>
+    )
+  },
+)
 
 export const Map = memo(
   ({
@@ -134,6 +159,7 @@ export const Map = memo(
     showStops,
     stops,
     handleMarkerClick,
+    handleStopClick,
     lines,
   }: MapProps) => {
     const memoizedVehicleMarkers = useMemo(
@@ -144,11 +170,11 @@ export const Map = memo(
           handleMarkerClick={handleMarkerClick}
         />
       ),
-      [filteredVehicles, lines, handleMarkerClick],
+      [filteredVehicles, lines],
     )
 
     const memoizedStopMarkers = useMemo(
-      () => <StopMarkers stops={stops} />,
+      () => <StopMarkers stops={stops} onStopClick={handleStopClick} />,
       [stops],
     )
 

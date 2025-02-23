@@ -28,6 +28,7 @@ import { Button } from "@/components/ui/button"
 import { Controls } from "@/components/controls"
 import { Map } from "@/components/map"
 import { VehicleCard } from "@/components/vehicle-card"
+import { StopCard } from "@/components/stop-card"
 
 import { useRealtimeVehicles } from "@/hooks/use-vehicles"
 import { useStops } from "@/hooks/use-stops"
@@ -120,10 +121,18 @@ export function Dashboard({
     const transitLine = transitLines.find(
       (line) => line.SiriLineRef === lineRef,
     )
+    setSelectedStop(null)
     setVehicleInfo({ vehicleActivity: vehicle, line: transitLine })
     selectLine(lineRef)
     toggleStops(true)
     await updateRouteStops(lineRef)
+  }, [])
+
+  const [selectedStop, setSelectedStop] = useState<TransitStop | null>(null)
+
+  const handleStopClick = useCallback((stop: TransitStop) => {
+    setVehicleInfo(null)
+    setSelectedStop(stop)
   }, [])
 
   const handleResetFilter = useCallback(() => {
@@ -147,9 +156,13 @@ export function Dashboard({
     [],
   )
 
-  const closeInfoCard = () => {
+  const closeVehicleInfoCard = () => {
     setVehicleInfo(null)
     handleResetFilter()
+  }
+
+  const closeStopInfoCard = () => {
+    setSelectedStop(null)
   }
 
   return (
@@ -160,10 +173,14 @@ export function Dashboard({
           showStops={showStops}
           stops={routeStops}
           handleMarkerClick={handleMarkerClick}
+          handleStopClick={handleStopClick}
           lines={transitLines}
         />
         {vehicleInfo && (
-          <VehicleCard data={vehicleInfo} onClose={closeInfoCard} />
+          <VehicleCard data={vehicleInfo} onClose={closeVehicleInfoCard} />
+        )}
+        {selectedStop && (
+          <StopCard stop={selectedStop} onClose={closeStopInfoCard} />
         )}
         <Drawer>
           <div className="absolute bottom-6 left-1/2 z-50 -translate-x-1/2 transform shadow-lg">
