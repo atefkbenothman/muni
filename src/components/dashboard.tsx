@@ -142,8 +142,8 @@ export function Dashboard({
   }
 
   return (
-    <div className="flex w-full flex-col space-y-4">
-      <div className="relative h-[36rem] overflow-hidden">
+    <div className="h-full">
+      <div className="relative h-full overflow-hidden">
         <Map
           filteredVehicles={filteredVehicles}
           showStops={showStops}
@@ -153,29 +153,44 @@ export function Dashboard({
         />
         {vehicleInfo && (
           <VehicleCard data={vehicleInfo} onClose={closeInfoCard} />
-        )}{" "}
-      </div>
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <Controls
-          operators={transitOperators}
-          selectedOperator={selectedOperator}
-          onOperatorChange={handleOperatorChange}
-          selectedDirection={selectedDirection}
-          onDirectionChange={handleDirection}
-          transitLines={transitLines}
-          selectedLine={selectedLine}
-          onLineChange={handleLineChange}
-          showStops={showStops}
-          onToggleStops={toggleStopMarkers}
-          onResetFilter={handleResetFilter}
-          showBuses={showBuses}
-          showMetro={showMetro}
-          showCableway={showCableway}
-          onToggleBuses={handleToggleBuses}
-          onToggleMetro={handleToggleMetro}
-          onToggleCableway={handleToggleCableway}
-        />
+        )}
       </div>
     </div>
   )
 }
+
+// <div className="flex w-full flex-col space-y-4">
+//   <div className="border-lightgray relative h-svh overflow-hidden sm:h-[36rem]">
+//     <Map
+//       filteredVehicles={filteredVehicles}
+//       showStops={showStops}
+//       stops={routeStops}
+//       handleMarkerClick={handleMarkerClick}
+//       lines={transitLines}
+//     />
+//     {vehicleInfo && (
+//       <VehicleCard data={vehicleInfo} onClose={closeInfoCard} />
+//     )}{" "}
+//   </div>
+//   <div className="flex flex-wrap items-center justify-between gap-4">
+//     <Controls
+//       operators={transitOperators}
+//       selectedOperator={selectedOperator}
+//       onOperatorChange={handleOperatorChange}
+//       selectedDirection={selectedDirection}
+//       onDirectionChange={handleDirection}
+//       transitLines={transitLines}
+//       selectedLine={selectedLine}
+//       onLineChange={handleLineChange}
+//       showStops={showStops}
+//       onToggleStops={toggleStopMarkers}
+//       onResetFilter={handleResetFilter}
+//       showBuses={showBuses}
+//       showMetro={showMetro}
+//       showCableway={showCableway}
+//       onToggleBuses={handleToggleBuses}
+//       onToggleMetro={handleToggleMetro}
+//       onToggleCableway={handleToggleCableway}
+//     />
+//   </div>
+// </div>

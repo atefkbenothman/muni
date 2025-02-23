@@ -149,28 +149,28 @@ export const Map = memo(
     )
 
     return (
-      <ReactMap
-        reuseMaps
-        mapboxAccessToken={MAPBOX_ACCESS_TOKEN}
-        initialViewState={{
-          longitude: -122.4194,
-          latitude: 37.7749,
-          zoom: 12,
-        }}
-        minZoom={8}
-        mapStyle="mapbox://styles/mapbox/streets-v12?optimize=true"
-        style={{
-          width: "100%",
-          height: "100%",
-          borderRadius: "4px",
-          border: "2px solid lightgray",
-        }}
-        maxBounds={bounds}
-      >
-        <NavigationControl position="top-left" />
-        {memoizedVehicleMarkers}
-        {showStops && memoizedStopMarkers}
-      </ReactMap>
+      <div className="h-full w-full md:h-[42rem]">
+        <ReactMap
+          reuseMaps
+          mapboxAccessToken={MAPBOX_ACCESS_TOKEN}
+          initialViewState={{
+            longitude: -122.4194,
+            latitude: 37.7749,
+            zoom: 12,
+          }}
+          minZoom={8}
+          mapStyle="mapbox://styles/mapbox/streets-v12?optimize=true"
+          style={{
+            width: "100%",
+            height: "100%",
+          }}
+          maxBounds={bounds}
+        >
+          <NavigationControl position="top-left" />
+          {memoizedVehicleMarkers}
+          {showStops && memoizedStopMarkers}
+        </ReactMap>
+      </div>
     )
   },
 )

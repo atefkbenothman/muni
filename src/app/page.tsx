@@ -13,10 +13,10 @@ export default async function Home() {
   const transitOperators = await getTransitOperators()
 
   return (
-    <div className="flex h-screen w-screen justify-center px-8">
-      <div className="flex w-[60rem] flex-col justify-center gap-2">
+    <div className="flex h-screen w-screen md:items-center md:justify-center md:px-8">
+      <div className="flex w-[60rem] flex-col md:justify-center md:py-4">
         {/* Title Bar */}
-        <div>
+        <div className="drop-shadow-lg md:pb-2 md:drop-shadow-none">
           <h1 className="font-geist text-md text-primary font-bold">
             San Francisco Live Muni Map
           </h1>
@@ -25,7 +25,7 @@ export default async function Home() {
           </p>
         </div>
         {/* Main Content */}
-        <div>
+        <div className="h-full">
           <Dashboard
             transitLines={transitLines}
             transitStops={transitStops}
