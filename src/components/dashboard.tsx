@@ -14,6 +14,17 @@ import type {
 
 import { filterVehiclesByLine, filterVehiclesByMode } from "@/utils/transit"
 
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer"
+import { Button } from "@/components/ui/button"
+
 import { Controls } from "@/components/controls"
 import { Map } from "@/components/map"
 import { VehicleCard } from "@/components/vehicle-card"
@@ -154,43 +165,53 @@ export function Dashboard({
         {vehicleInfo && (
           <VehicleCard data={vehicleInfo} onClose={closeInfoCard} />
         )}
+        <Drawer>
+          <div className="absolute bottom-6 left-1/2 z-50 -translate-x-1/2 transform shadow-lg">
+            <DrawerTrigger asChild>
+              <Button
+                className="rounded-xs bg-black px-3 font-semibold text-white opacity-90 shadow-lg hover:cursor-pointer"
+                size="sm"
+              >
+                Settings
+              </Button>
+            </DrawerTrigger>
+          </div>
+          <DrawerContent>
+            <DrawerHeader className="py-2">
+              <DrawerTitle>Settings</DrawerTitle>
+            </DrawerHeader>
+            <DrawerFooter className="pt-2">
+              <Controls
+                operators={transitOperators}
+                selectedOperator={selectedOperator}
+                onOperatorChange={handleOperatorChange}
+                selectedDirection={selectedDirection}
+                onDirectionChange={handleDirection}
+                transitLines={transitLines}
+                selectedLine={selectedLine}
+                onLineChange={handleLineChange}
+                showStops={showStops}
+                onToggleStops={toggleStopMarkers}
+                onResetFilter={handleResetFilter}
+                showBuses={showBuses}
+                showMetro={showMetro}
+                showCableway={showCableway}
+                onToggleBuses={handleToggleBuses}
+                onToggleMetro={handleToggleMetro}
+                onToggleCableway={handleToggleCableway}
+              />
+              <DrawerClose>
+                <Button
+                  variant="default"
+                  className="w-full rounded-xs hover:cursor-pointer"
+                >
+                  Close
+                </Button>
+              </DrawerClose>
+            </DrawerFooter>
+          </DrawerContent>
+        </Drawer>
       </div>
     </div>
   )
 }
-
-// <div className="flex w-full flex-col space-y-4">
-//   <div className="border-lightgray relative h-svh overflow-hidden sm:h-[36rem]">
-//     <Map
-//       filteredVehicles={filteredVehicles}
-//       showStops={showStops}
-//       stops={routeStops}
-//       handleMarkerClick={handleMarkerClick}
-//       lines={transitLines}
-//     />
-//     {vehicleInfo && (
-//       <VehicleCard data={vehicleInfo} onClose={closeInfoCard} />
-//     )}{" "}
-//   </div>
-//   <div className="flex flex-wrap items-center justify-between gap-4">
-//     <Controls
-//       operators={transitOperators}
-//       selectedOperator={selectedOperator}
-//       onOperatorChange={handleOperatorChange}
-//       selectedDirection={selectedDirection}
-//       onDirectionChange={handleDirection}
-//       transitLines={transitLines}
-//       selectedLine={selectedLine}
-//       onLineChange={handleLineChange}
-//       showStops={showStops}
-//       onToggleStops={toggleStopMarkers}
-//       onResetFilter={handleResetFilter}
-//       showBuses={showBuses}
-//       showMetro={showMetro}
-//       showCableway={showCableway}
-//       onToggleBuses={handleToggleBuses}
-//       onToggleMetro={handleToggleMetro}
-//       onToggleCableway={handleToggleCableway}
-//     />
-//   </div>
-// </div>
