@@ -151,6 +151,7 @@ export const Map = memo(
     return (
       <div className="h-full w-full md:h-[42rem]">
         <ReactMap
+          id="react-map"
           reuseMaps
           mapboxAccessToken={MAPBOX_ACCESS_TOKEN}
           initialViewState={{

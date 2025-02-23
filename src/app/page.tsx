@@ -16,7 +16,7 @@ export default async function Home() {
     <div className="flex h-screen w-screen md:items-center md:justify-center md:px-8">
       <div className="flex w-[60rem] flex-col md:justify-center md:py-4">
         {/* Title Bar */}
-        <div className="drop-shadow-lg md:pb-2 md:drop-shadow-none">
+        <div className="px-2 py-2 drop-shadow-lg md:px-0 md:py-0 md:pb-2 md:drop-shadow-none">
           <h1 className="font-geist text-md text-primary font-bold">
             San Francisco Live Muni Map
           </h1>

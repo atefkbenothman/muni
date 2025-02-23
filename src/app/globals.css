@@ -132,3 +132,13 @@ body {
   color: #f9f8f6;
   font-family: var(--font-geist-mono);
 }
+
+#react-map {
+  border-radius: 0;
+}
+
+@media (min-width: 768px) {
+  #react-map {
+    border-radius: 0.2rem;
+  }
+}
