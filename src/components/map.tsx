@@ -1,7 +1,7 @@
 "use client"
 
 import { memo, useMemo } from "react"
-import { Map as ReactMap } from "react-map-gl/mapbox"
+import { NavigationControl, Map as ReactMap } from "react-map-gl/mapbox"
 import { Marker } from "react-map-gl/mapbox"
 
 import {
@@ -167,6 +167,7 @@ export const Map = memo(
         }}
         maxBounds={bounds}
       >
+        <NavigationControl position="top-left" />
         {memoizedVehicleMarkers}
         {showStops && memoizedStopMarkers}
       </ReactMap>

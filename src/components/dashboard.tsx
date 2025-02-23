@@ -142,8 +142,8 @@ export function Dashboard({
   }
 
   return (
-    <div className="grid w-full grid-cols-10">
-      <div className="relative col-span-7 h-[40rem] overflow-hidden">
+    <div className="flex w-full flex-col space-y-4">
+      <div className="relative h-[36rem] overflow-hidden">
         <Map
           filteredVehicles={filteredVehicles}
           showStops={showStops}
@@ -155,28 +155,26 @@ export function Dashboard({
           <VehicleCard data={vehicleInfo} onClose={closeInfoCard} />
         )}{" "}
       </div>
-      <div className="col-span-3">
-        <div className="h-full space-y-4">
-          <Controls
-            operators={transitOperators}
-            selectedOperator={selectedOperator}
-            onOperatorChange={handleOperatorChange}
-            selectedDirection={selectedDirection}
-            onDirectionChange={handleDirection}
-            transitLines={transitLines}
-            selectedLine={selectedLine}
-            onLineChange={handleLineChange}
-            showStops={showStops}
-            onToggleStops={toggleStopMarkers}
-            onResetFilter={handleResetFilter}
-            showBuses={showBuses}
-            showMetro={showMetro}
-            showCableway={showCableway}
-            onToggleBuses={handleToggleBuses}
-            onToggleMetro={handleToggleMetro}
-            onToggleCableway={handleToggleCableway}
-          />
-        </div>
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <Controls
+          operators={transitOperators}
+          selectedOperator={selectedOperator}
+          onOperatorChange={handleOperatorChange}
+          selectedDirection={selectedDirection}
+          onDirectionChange={handleDirection}
+          transitLines={transitLines}
+          selectedLine={selectedLine}
+          onLineChange={handleLineChange}
+          showStops={showStops}
+          onToggleStops={toggleStopMarkers}
+          onResetFilter={handleResetFilter}
+          showBuses={showBuses}
+          showMetro={showMetro}
+          showCableway={showCableway}
+          onToggleBuses={handleToggleBuses}
+          onToggleMetro={handleToggleMetro}
+          onToggleCableway={handleToggleCableway}
+        />
       </div>
     </div>
   )

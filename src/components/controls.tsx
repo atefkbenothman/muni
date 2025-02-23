@@ -66,20 +66,20 @@ export const Controls = memo(
     const [linesOpen, setLinesOpen] = useState(false)
     const [directionsOpen, setDirectionsOpen] = useState(false)
 
-    console.log(selectedLine)
-
     return (
-      <div className="flex h-full flex-col justify-center space-y-12 px-12">
-        <div className="flex flex-col space-y-4">
-          <div className="flex items-center">
-            <Label htmlFor="showStops">Lines</Label>
+      <div className="flex w-full flex-wrap items-center justify-between gap-4">
+        {/* Left side - Selectors group */}
+        <div className="flex items-center gap-4">
+          <div className="flex items-center space-x-2">
+            <Label htmlFor="showStops">Lines:</Label>
             <Popover open={linesOpen} onOpenChange={setLinesOpen}>
-              <PopoverTrigger asChild className="ml-auto">
+              <PopoverTrigger asChild>
                 <Button
                   variant="outline"
                   role="combobox"
                   aria-expanded={linesOpen}
-                  className="w-[6rem] justify-between"
+                  className="w-[5rem] justify-between rounded-sm text-xs"
+                  size="sm"
                 >
                   {transitLines.find((line) => line.Id === selectedLine)?.Id ||
                     "All"}
@@ -125,21 +125,23 @@ export const Controls = memo(
               </PopoverContent>
             </Popover>
           </div>
-          <div className="flex items-center">
-            <Label htmlFor="direction">Direction</Label>
+
+          <div className="flex items-center space-x-2">
+            <Label htmlFor="direction">Direction:</Label>
             <Popover open={directionsOpen} onOpenChange={setDirectionsOpen}>
-              <PopoverTrigger asChild className="ml-auto">
+              <PopoverTrigger asChild>
                 <Button
                   variant="outline"
                   role="combobox"
                   aria-expanded={linesOpen}
-                  className="w-[6rem] justify-between"
+                  className="w-[5rem] justify-between rounded-sm text-xs"
+                  size="sm"
                 >
                   {selectedDirection}
                   <ChevronsUpDown className="opacity-50" />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-[8rem] p-0">
+              <PopoverContent className="w-fit p-0">
                 <Command>
                   <CommandList>
                     <CommandGroup>
@@ -180,36 +182,40 @@ export const Controls = memo(
             </Popover>
           </div>
         </div>
-        <div className="space-y-4">
-          <div className="flex items-center space-x-2">
-            <Label htmlFor="showStops">Stops 📍</Label>
-            <Switch
-              id="showStops"
-              className="ml-auto"
-              checked={showStops}
-              onCheckedChange={onToggleStops}
-            />
+
+        {/* Right side - Toggles group */}
+        <div className="flex flex-wrap items-center justify-end gap-4">
+          {/* Stops Switch */}
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2">
+              <Label htmlFor="showStops">📍 Stops</Label>
+              <Switch
+                id="showStops"
+                checked={showStops}
+                onCheckedChange={onToggleStops}
+              />
+            </div>
+            {/* Buses Switch */}
+            <div className="flex items-center space-x-2">
+              <Label htmlFor="showBuses">🚌 Buses</Label>
+              <Switch
+                id="showBuses"
+                checked={showBuses}
+                onCheckedChange={onToggleBuses}
+              />
+            </div>
+            {/* Buses Switch */}
+            <div className="flex items-center space-x-2">
+              <Label htmlFor="showMetro">🚃 Trains</Label>
+              <Switch
+                id="showMetro"
+                checked={showMetro}
+                onCheckedChange={onToggleMetro}
+              />
+            </div>
           </div>
           <div className="flex items-center space-x-2">
-            <Label htmlFor="showBuses">Buses 🚌</Label>
-            <Switch
-              id="showBuses"
-              className="ml-auto"
-              checked={showBuses}
-              onCheckedChange={onToggleBuses}
-            />
-          </div>
-          <div className="flex items-center space-x-2">
-            <Label htmlFor="showMetro">Trains 🚃</Label>
-            <Switch
-              id="showMetro"
-              className="ml-auto"
-              checked={showMetro}
-              onCheckedChange={onToggleMetro}
-            />
-          </div>
-          <div className="flex items-center space-x-2">
-            <Label htmlFor="showCableway">Cableway 🚋</Label>
+            <Label htmlFor="showCableway">🚋 Cableway</Label>
             <Switch
               id="showCableway"
               className="ml-auto"

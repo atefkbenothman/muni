@@ -14,14 +14,14 @@ export default async function Home() {
 
   return (
     <div className="flex h-screen w-screen justify-center px-8">
-      <div className="flex w-[64rem] flex-col justify-center gap-2">
+      <div className="flex w-[60rem] flex-col justify-center gap-2">
         {/* Title Bar */}
         <div>
-          <h1 className="font-geist text-lg font-bold">
-            San Francisco Muni Map
+          <h1 className="font-geist text-md text-primary font-bold">
+            San Francisco Live Muni Map
           </h1>
-          <p className="ml-auto text-xs text-gray-300">
-            last updated: Mon 01-01-25
+          <p className="text-tiny text-secondary ml-auto">
+            Last Updated: Mon 01-01-25
           </p>
         </div>
         {/* Main Content */}
