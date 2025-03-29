@@ -171,6 +171,27 @@ export type Database = {
         }
         Relationships: []
       }
+      vehicle_monitoring: {
+        Row: {
+          created_at: string
+          data: Json
+          id: number
+          recorded_at: string
+        }
+        Insert: {
+          created_at?: string
+          data: Json
+          id?: number
+          recorded_at: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: number
+          recorded_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
