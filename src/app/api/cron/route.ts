@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server"
+import { getVehicleMonitoring } from "@/actions/muni-actions"
 
 export async function GET() {
-  return NextResponse.json({ ok: true })
+  const data = await getVehicleMonitoring()
+  console.log(data)
+  return NextResponse.json({ ok: true, data: data })
 }
