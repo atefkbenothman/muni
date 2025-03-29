@@ -21,7 +21,8 @@ export async function GET() {
       );
     }
 
-    return NextResponse.json({ ok: true, data: data })
+    console.log("success")
+    return NextResponse.json({ ok: true })
   } catch (err) {
     console.error("Error in GET handler:", err);
     return NextResponse.json(
