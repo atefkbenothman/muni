@@ -24,7 +24,7 @@ export default async function Home() {
           <h1 className="font-geist text-md text-primary font-bold">
             San Francisco Live Muni Map
           </h1>
-          <div className="mr-2 md:hidden">
+          <div className="md:hidden">
             <p className="text-secondary text-xs">
               Made by{" "}
               <a
