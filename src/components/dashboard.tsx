@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback, useMemo } from "react"
+import { useState, useCallback, useMemo, useEffect } from "react"
 
 import "mapbox-gl/dist/mapbox-gl.css"
 
@@ -10,6 +10,7 @@ import type {
   TransitOperator,
   VehicleActivity,
   Directions,
+  VehicleMonitoring,
 } from "@/types/transit-types"
 
 import { filterVehiclesByLine, filterVehiclesByMode } from "@/utils/transit"
@@ -33,22 +34,36 @@ import { StopCard } from "@/components/stop-card"
 import { useRealtimeVehicles } from "@/hooks/use-vehicles"
 import { useStops } from "@/hooks/use-stops"
 import { useFilters } from "@/hooks/use-filters"
-
-/* Globals */
-const REFRESH_INTERVAL = 600
+import { Countdown } from "./countdown"
 
 type ContentProps = {
+  latestVehicleMonitoring: VehicleMonitoring | null
   transitLines: TransitLine[]
   transitStops: TransitStop[]
   transitOperators: TransitOperator[]
 }
 
 export function Dashboard({
+  latestVehicleMonitoring,
   transitLines,
   transitStops,
   transitOperators,
 }: ContentProps) {
-  const { vehicles } = useRealtimeVehicles()
+  const { vehicles, setVehicles, lastUpdateRealtime } = useRealtimeVehicles()
+
+  const [lastUpdate, setLastUpdate] = useState<string>(new Date(latestVehicleMonitoring?.recorded_at as string).toLocaleString())
+
+  useEffect(() => {
+    if (vehicles.length === 0 && latestVehicleMonitoring) {
+      setVehicles(latestVehicleMonitoring.data as VehicleActivity[])
+    }
+  }, [])
+
+  useEffect(() => {
+    if (lastUpdateRealtime) {
+      setLastUpdate(lastUpdateRealtime)
+    }
+  }, [lastUpdateRealtime])
 
   const {
     filters,
@@ -166,75 +181,74 @@ export function Dashboard({
   }
 
   return (
-    <div className="h-full">
-      <div className="relative h-full overflow-hidden">
-        <Map
-          filteredVehicles={filteredVehicles}
-          showStops={showStops}
-          stops={routeStops}
-          handleMarkerClick={handleMarkerClick}
-          handleStopClick={handleStopClick}
-          lines={transitLines}
-        />
-        {vehicleInfo && (
-          <VehicleCard data={vehicleInfo} onClose={closeVehicleInfoCard} />
-        )}
-        {selectedStop && (
-          <StopCard stop={selectedStop} onClose={closeStopInfoCard} />
-        )}
-        <Drawer>
-          <div className="absolute bottom-6 left-1/2 z-50 -translate-x-1/2 transform shadow-lg">
-            <DrawerTrigger asChild>
+    <div className="relative h-full overflow-hidden">
+      <Countdown lastUpdate={lastUpdate} />
+      <Map
+        filteredVehicles={filteredVehicles}
+        showStops={showStops}
+        stops={routeStops}
+        handleMarkerClick={handleMarkerClick}
+        handleStopClick={handleStopClick}
+        lines={transitLines}
+      />
+      {vehicleInfo && (
+        <VehicleCard data={vehicleInfo} onClose={closeVehicleInfoCard} />
+      )}
+      {selectedStop && (
+        <StopCard stop={selectedStop} onClose={closeStopInfoCard} />
+      )}
+      <Drawer>
+        <div className="absolute bottom-6 left-1/2 z-50 -translate-x-1/2 transform shadow-lg">
+          <DrawerTrigger asChild>
+            <Button
+              className="rounded-xs bg-black px-3 font-semibold text-white opacity-90 shadow-lg hover:cursor-pointer"
+              size="sm"
+            >
+              Settings
+            </Button>
+          </DrawerTrigger>
+        </div>
+        <DrawerContent>
+          <DrawerHeader className="py-2">
+            <DrawerTitle>Settings</DrawerTitle>
+          </DrawerHeader>
+          <DrawerFooter className="pt-2">
+            <Controls
+              operators={transitOperators}
+              selectedOperator={selectedOperator}
+              onOperatorChange={handleOperatorChange}
+              selectedDirection={selectedDirection}
+              onDirectionChange={handleDirection}
+              transitLines={transitLines}
+              selectedLine={selectedLine}
+              onLineChange={handleLineChange}
+              showStops={showStops}
+              onToggleStops={toggleStopMarkers}
+              showBuses={showBuses}
+              showMetro={showMetro}
+              showCableway={showCableway}
+              onToggleBuses={handleToggleBuses}
+              onToggleMetro={handleToggleMetro}
+              onToggleCableway={handleToggleCableway}
+            />
+            <Button
+              variant="outline"
+              className="w-full rounded-xs hover:cursor-pointer"
+              onClick={handleResetFilter}
+            >
+              Reset
+            </Button>
+            <DrawerClose>
               <Button
-                className="rounded-xs bg-black px-3 font-semibold text-white opacity-90 shadow-lg hover:cursor-pointer"
-                size="sm"
-              >
-                Settings
-              </Button>
-            </DrawerTrigger>
-          </div>
-          <DrawerContent>
-            <DrawerHeader className="py-2">
-              <DrawerTitle>Settings</DrawerTitle>
-            </DrawerHeader>
-            <DrawerFooter className="pt-2">
-              <Controls
-                operators={transitOperators}
-                selectedOperator={selectedOperator}
-                onOperatorChange={handleOperatorChange}
-                selectedDirection={selectedDirection}
-                onDirectionChange={handleDirection}
-                transitLines={transitLines}
-                selectedLine={selectedLine}
-                onLineChange={handleLineChange}
-                showStops={showStops}
-                onToggleStops={toggleStopMarkers}
-                showBuses={showBuses}
-                showMetro={showMetro}
-                showCableway={showCableway}
-                onToggleBuses={handleToggleBuses}
-                onToggleMetro={handleToggleMetro}
-                onToggleCableway={handleToggleCableway}
-              />
-              <Button
-                variant="outline"
+                variant="default"
                 className="w-full rounded-xs hover:cursor-pointer"
-                onClick={handleResetFilter}
               >
-                Reset
+                Close
               </Button>
-              <DrawerClose>
-                <Button
-                  variant="default"
-                  className="w-full rounded-xs hover:cursor-pointer"
-                >
-                  Close
-                </Button>
-              </DrawerClose>
-            </DrawerFooter>
-          </DrawerContent>
-        </Drawer>
-      </div>
+            </DrawerClose>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
     </div>
   )
 }

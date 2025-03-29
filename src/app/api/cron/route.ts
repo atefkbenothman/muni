@@ -9,7 +9,7 @@ export async function GET() {
     const client = await createClient()
 
     const { error } = await client.from("vehicle_monitoring").insert({
-      recorded_at: new Date().toISOString(),
+      recorded_at: new Date().toLocaleString("en-US", { timeZone: "America/Los_Angeles" }),
       data: data
     })
 

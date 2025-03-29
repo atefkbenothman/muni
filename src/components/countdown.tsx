@@ -1,10 +1,11 @@
-import { useRealtimeVehicles } from "@/hooks/use-vehicles"
+interface CountdownProps {
+  lastUpdate: string
+}
 
-export function Countdown({ refreshInterval }: { refreshInterval: number }) {
-  const { countdown } = useRealtimeVehicles(refreshInterval)
+export function Countdown({ lastUpdate }: CountdownProps) {
   return (
-    <div className="my-4 text-sm text-gray-400">
-      Refreshing in {countdown} seconds
-    </div>
+    <p className="text-sm text-secondary px-2 md:px-0 pb-2">
+      Last Updated: {lastUpdate}
+    </p>
   )
 }

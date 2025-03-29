@@ -12,7 +12,7 @@ type InfoCardProps = {
 
 export function VehicleCard({ data, onClose }: InfoCardProps) {
   return (
-    <Card className="absolute top-2 right-2 z-10 w-64 rounded-xs py-4 opacity-90 shadow-xl">
+    <Card className="absolute top-8 right-2 z-10 w-64 rounded-xs py-4 opacity-90 shadow-xl">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 px-4 pb-0">
         <CardTitle className="flex flex-row items-center gap-4 text-sm font-medium">
           <div className="rounded-xl bg-white px-2.5 py-1 text-black">

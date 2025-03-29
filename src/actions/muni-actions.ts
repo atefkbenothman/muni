@@ -2,6 +2,7 @@
 
 import { createClient } from "@/utils/server"
 import { VehicleActivity } from "@/types/transit-types"
+import { RealtimeChannel } from "@supabase/supabase-js"
 
 const apiKey = process.env.TRANSIT_API_KEY
 const agency = "SF"
@@ -21,6 +22,24 @@ export async function getVehicleMonitoring() {
   return data["Siri"]["ServiceDelivery"]["VehicleMonitoringDelivery"][
     "VehicleActivity"
   ] as VehicleActivity[]
+}
+
+export async function getLatestVehicleMonitoring() {
+  const client = await createClient();
+
+  const { data: data, error: error } = await client
+    .from("vehicle_monitoring")
+    .select("*")
+    .order("id", { ascending: false })
+    .limit(1)
+    .single()
+
+  if (error) {
+    console.error("Error fetching latest vehicle monitoring:", error);
+    return null
+  }
+
+  return data
 }
 
 export async function getTransitLines() {
